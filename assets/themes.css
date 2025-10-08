@@ -1,0 +1,211 @@
+/* カラーテーマシステム */
+
+/* デフォルトテーマ (Light & Soft) */
+:root {
+    --bg-start: #f0f9ff;
+    --bg-middle: #bfdbfe;
+    --bg-end: #e0f2fe;
+    --primary-start: #3b82f6;
+    --primary-end: #60a5fa;
+    --secondary-start: #93c5fd;
+    --secondary-end: #dbeafe;
+    --accent-color: #2563eb;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-accent: #2563eb;
+    --container-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(148, 163, 184, 0.3);
+    --shadow-color: rgba(59, 130, 246, 0.15);
+    --progress-glow: rgba(59, 130, 246, 0.4);
+}
+
+/* テーマ1: Sakura Pink */
+[data-theme="sakura"] {
+    --bg-start: #fdf2f8;
+    --bg-middle: #fbcfe8;
+    --bg-end: #fce7f3;
+    --primary-start: #ec4899;
+    --primary-end: #f472b6;
+    --secondary-start: #f9a8d4;
+    --secondary-end: #fce7f3;
+    --accent-color: #db2777;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-accent: #db2777;
+    --container-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(244, 114, 182, 0.3);
+    --shadow-color: rgba(236, 72, 153, 0.15);
+    --progress-glow: rgba(236, 72, 153, 0.4);
+}
+
+/* テーマ2: Ocean Blue */
+[data-theme="ocean"] {
+    --bg-start: #f0f9ff;
+    --bg-middle: #bfdbfe;
+    --bg-end: #dbeafe;
+    --primary-start: #2563eb;
+    --primary-end: #3b82f6;
+    --secondary-start: #93c5fd;
+    --secondary-end: #dbeafe;
+    --accent-color: #1d4ed8;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-accent: #1d4ed8;
+    --container-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(59, 130, 246, 0.3);
+    --shadow-color: rgba(59, 130, 246, 0.15);
+    --progress-glow: rgba(59, 130, 246, 0.4);
+}
+
+/* テーマ3: Forest Green */
+[data-theme="forest"] {
+    --bg-start: #f0fdf4;
+    --bg-middle: #bbf7d0;
+    --bg-end: #ecfdf5;
+    --primary-start: #4ade80;
+    --primary-end: #65a30d;
+    --secondary-start: #86efac;
+    --secondary-end: #bbf7d0;
+    --accent-color: #22c55e;
+    --text-primary: #1f2937;
+    --text-secondary: #374151;
+    --text-accent: #166534;
+    --container-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(74, 222, 128, 0.3);
+    --shadow-color: rgba(74, 222, 128, 0.15);
+    --progress-glow: rgba(74, 222, 128, 0.4);
+}
+
+/* テーマ4: Sunset Orange */
+[data-theme="sunset"] {
+    --bg-start: #fffbeb;
+    --bg-middle: #fed7aa;
+    --bg-end: #fef3c7;
+    --primary-start: #fb923c;
+    --primary-end: #f59e0b;
+    --secondary-start: #fdba74;
+    --secondary-end: #fed7aa;
+    --accent-color: #ea580c;
+    --text-primary: #1f2937;
+    --text-secondary: #374151;
+    --text-accent: #c2410c;
+    --container-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(251, 146, 60, 0.3);
+    --shadow-color: rgba(251, 146, 60, 0.15);
+    --progress-glow: rgba(251, 146, 60, 0.4);
+}
+
+/* テーマ5: Violet Night */
+[data-theme="violet"] {
+    --bg-start: #faf5ff;
+    --bg-middle: #e9d5ff;
+    --bg-end: #f3e8ff;
+    --primary-start: #a78bfa;
+    --primary-end: #8b5cf6;
+    --secondary-start: #c4b5fd;
+    --secondary-end: #e9d5ff;
+    --accent-color: #7c3aed;
+    --text-primary: #1f2937;
+    --text-secondary: #374151;
+    --text-accent: #5b21b6;
+    --container-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(167, 139, 250, 0.3);
+    --shadow-color: rgba(167, 139, 250, 0.15);
+    --progress-glow: rgba(167, 139, 250, 0.4);
+}
+
+/* テーマ6: Pure White */
+[data-theme="white"] {
+    --bg-start: #ffffff;
+    --bg-middle: #f8fafc;
+    --bg-end: #f1f5f9;
+    --primary-start: #64748b;
+    --primary-end: #94a3b8;
+    --secondary-start: #cbd5e1;
+    --secondary-end: #e2e8f0;
+    --accent-color: #475569;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-accent: #475569;
+    --container-bg: rgba(255, 255, 255, 0.9);
+    --border-color: rgba(148, 163, 184, 0.3);
+    --shadow-color: rgba(100, 116, 139, 0.15);
+    --progress-glow: rgba(100, 116, 139, 0.3);
+}
+
+/* テーマ7: Deep Black */
+[data-theme="black"] {
+    --bg-start: #0f172a;
+    --bg-middle: #1e293b;
+    --bg-end: #334155;
+    --primary-start: #60a5fa;
+    --primary-end: #3b82f6;
+    --secondary-start: #475569;
+    --secondary-end: #64748b;
+    --accent-color: #3b82f6;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-accent: #60a5fa;
+    --container-bg: rgba(30, 41, 59, 0.8);
+    --border-color: rgba(71, 85, 105, 0.5);
+    --shadow-color: rgba(96, 165, 250, 0.2);
+    --progress-glow: rgba(96, 165, 250, 0.5);
+}
+
+/* 背景グラデーションの適用 */
+body {
+    background: linear-gradient(135deg, var(--bg-start), var(--bg-middle), var(--bg-end));
+}
+
+/* プライマリグラデーション */
+.gradient-primary {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+}
+
+/* セカンダリグラデーション */
+.gradient-secondary {
+    background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
+}
+
+/* テキストグラデーション */
+.text-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* プログレスサークルのカスタマイズ */
+.progress-circle {
+    filter: drop-shadow(0 0 8px var(--progress-glow));
+}
+
+/* アニメーションのカスタマイズ */
+.working-animation {
+    box-shadow: 0 0 5px var(--shadow-color), 0 0 20px var(--shadow-color), 0 0 30px rgba(var(--accent-color), 0.4);
+    animation: pulse-glow 2s infinite;
+}
+
+/* ボタンのホバー効果 */
+.btn-primary:hover {
+    box-shadow: 0 0 20px var(--shadow-color);
+}
+
+/* コンテナの背景色 */
+.theme-container {
+    background: var(--container-bg);
+    border-color: var(--border-color);
+}
+
+/* テキストカラー */
+.text-theme-primary {
+    color: var(--text-primary);
+}
+
+.text-theme-secondary {
+    color: var(--text-secondary);
+}
+
+.text-theme-accent {
+    color: var(--text-accent);
+}

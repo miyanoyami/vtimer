@@ -1,0 +1,134 @@
+/* カスタムアニメーション */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.4);
+    }
+}
+
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* 作業中のパルスアニメーション */
+.working-animation {
+    animation: pulse-glow 2s infinite;
+}
+
+
+/* ボタンホバー時のシマーエフェクト */
+.button-shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    border-radius: inherit;
+}
+
+/* プログレスサークルのパルス */
+.progress-pulse {
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+    animation: pulse 2s infinite;
+}
+
+/* ステータステキストのフェードイン */
+.status-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 完了時の祝福アニメーション */
+@keyframes celebration {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    25% {
+        transform: scale(1.1) rotate(-5deg);
+    }
+    50% {
+        transform: scale(1.2) rotate(5deg);
+    }
+    75% {
+        transform: scale(1.1) rotate(-3deg);
+    }
+}
+
+.celebration-animation {
+    animation: celebration 0.6s ease-in-out;
+}
+
+
+/* スマートフォン向けの調整 */
+@media (max-width: 640px) {
+    .timer-container {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .timer-display {
+        font-size: 4rem;
+    }
+    
+    .controls button {
+        font-size: 1.2rem;
+        padding: 12px 24px;
+        margin: 5px;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-gradient-start: #0f0f23;
+        --bg-gradient-middle: #1a1a2e;
+        --bg-gradient-end: #0f0f23;
+    }
+}
+
+/* 高コントラスト対応 */
+@media (prefers-contrast: high) {
+    .timer-display {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    .controls button {
+        border: 2px solid white;
+    }
+}
+
+/* アニメーション無効化対応 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

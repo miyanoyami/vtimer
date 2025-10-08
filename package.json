@@ -1,0 +1,25 @@
+{
+  "name": "vtimer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc src/script.ts --outDir dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miyanoyami/vtimer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/miyanoyami/vtimer/issues"
+  },
+  "homepage": "https://github.com/miyanoyami/vtimer#readme",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

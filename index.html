@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おしえーる</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'float': 'float 6s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-6xl animate-fade-in">
+        <!-- ヘッダー -->
+        <div class="text-center mb-8 animate-slide-up">
+            <h1 class="text-5xl md:text-6xl mb-4 bg-gradient-to-r from-indigo-600 to-purple-500 bg-clip-text text-transparent" style="font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 800; letter-spacing: 0.05em;">
+                おしえーる
+            </h1>
+            <div class="max-w-2xl mx-auto mt-6">
+                <div class="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-indigo-200/50">
+                    <p class="text-gray-700 text-sm leading-relaxed">
+                        ポモドーロテクニックでの作業を推しが応援してくれるタイマーです。<br>
+                        <span class="font-semibold text-indigo-600">25分作業 → 5分休憩</span>を<span class="font-semibold">4セット</span>（4回目の休憩のみ15分）で<span class="font-semibold">1サイクル</span><br><span class="font-semibold">2サイクル</span>で合計約<span class="font-semibold text-purple-600">4時間のタイマーです。</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- タイマー選択 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 sm:gap-3">
+            <!-- yaoaoi -->
+            <a href="timers/yaoaoi.html" 
+               class="group bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-blue-200/50 
+                      hover:bg-white/90 hover:shadow-md transition-all duration-200 hover:scale-105 flex flex-col items-center">
+                
+                <div class="w-12 h-12 rounded-full overflow-hidden border border-blue-200/70 mb-2">
+                    <img src="assets/images/yaoaoi.jpg" 
+                         alt="八百アオヰ" 
+                         class="w-full h-full object-cover"
+                         onerror="this.parentElement.innerHTML='<div class=&quot;w-full h-full bg-blue-100 flex items-center justify-center&quot;><svg class=&quot;w-6 h-6 text-blue-600&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;><path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z&quot;/></svg></div>'">
+                </div>
+                <span class="text-xs font-medium text-gray-700 text-center leading-tight">八百アオヰ</span>
+            </a>
+
+            <!-- niwawamizuku -->
+            <a href="timers/niwawamizuku.html" 
+               class="group bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-blue-200/50 
+                      hover:bg-white/90 hover:shadow-md transition-all duration-200 hover:scale-105 flex flex-col items-center">
+                
+                <div class="w-12 h-12 rounded-full overflow-hidden border border-blue-200/70 mb-2">
+                    <img src="assets/images/niwawamizuku.jpg" 
+                         alt="庭和みずく" 
+                         class="w-full h-full object-cover"
+                         onerror="this.parentElement.innerHTML='<div class=&quot;w-full h-full bg-blue-100 flex items-center justify-center&quot;><svg class=&quot;w-6 h-6 text-blue-600&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;><path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z&quot;/></svg></div>'">
+                </div>
+                <span class="text-xs font-medium text-gray-700 text-center leading-tight">庭和みずく</span>
+            </a>
+
+            <!-- Available theme templates (for future implementation) -->
+            <!--
+            Sakura Pink
+            <a href="timers/sakura.html"
+               class="group bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-pink-200/50
+                      hover:bg-white/90 hover:shadow-md transition-all duration-200 hover:scale-105 flex flex-col items-center">
+
+                <div class="w-12 h-12 rounded-full overflow-hidden border border-pink-200/70 mb-2">
+                    <div class="w-full h-full bg-gradient-to-br from-pink-200 to-pink-300 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </div>
+                </div>
+                <span class="text-xs font-medium text-gray-700 text-center leading-tight">Sakura Pink</span>
+            </a>
+
+            Forest Green
+            <a href="timers/forest.html"
+               class="group bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-green-200/50
+                      hover:bg-white/90 hover:shadow-md transition-all duration-200 hover:scale-105 flex flex-col items-center">
+
+                <div class="w-12 h-12 rounded-full overflow-hidden border border-green-200/70 mb-2">
+                    <div class="w-full h-full bg-gradient-to-br from-green-200 to-green-400 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21L12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <span class="text-xs font-medium text-gray-700 text-center leading-tight">Forest Green</span>
+            </a>
+
+            Sunset Orange
+            <a href="timers/sunset.html"
+               class="group bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-orange-200/50
+                      hover:bg-white/90 hover:shadow-md transition-all duration-200 hover:scale-105 flex flex-col items-center">
+
+                <div class="w-12 h-12 rounded-full overflow-hidden border border-orange-200/70 mb-2">
+                    <div class="w-full h-full bg-gradient-to-br from-orange-200 to-orange-400 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-orange-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>
+                        </svg>
+                    </div>
+                </div>
+                <span class="text-xs font-medium text-gray-700 text-center leading-tight">Sunset Orange</span>
+            </a>
+
+            Violet Night
+            <a href="timers/violet.html"
+               class="group bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-purple-200/50
+                      hover:bg-white/90 hover:shadow-md transition-all duration-200 hover:scale-105 flex flex-col items-center">
+
+                <div class="w-12 h-12 rounded-full overflow-hidden border border-purple-200/70 mb-2">
+                    <div class="w-full h-full bg-gradient-to-br from-purple-200 to-purple-400 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z"/>
+                            <path d="M12 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <span class="text-xs font-medium text-gray-700 text-center leading-tight">Violet Night</span>
+            </a>
+            -->
+        </div>
+
+        <!-- フッター -->
+        <div class="text-center mt-8">
+            <p class="text-gray-400 text-xs">宮乃やみ@miyanoyami83 all rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
