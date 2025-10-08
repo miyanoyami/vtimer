@@ -113,6 +113,55 @@ let sequenceIndex: number = 0;
 let timeInSeconds: number = sequence[sequenceIndex].duration;
 let totalTimeInSeconds: number = sequence[sequenceIndex].duration;
 let totalWorkTimeInSeconds: number = 0; // 総作業時間（集中時間のみカウント）
+let phaseStartTime: number = 0; // フェーズ開始時刻（実時間）
+let pausedRemaining: number = 0; // 一時停止時の残り時間
+let currentPhaseWorkTime: number = 0; // 現在のフェーズで経過した作業時間
+
+// LocalStorage キー
+const STORAGE_KEYS = {
+    IS_RUNNING: 'timer_isRunning',
+    SEQUENCE_INDEX: 'timer_sequenceIndex',
+    PHASE_START_TIME: 'timer_phaseStartTime',
+    TOTAL_DURATION: 'timer_totalDuration',
+    TOTAL_WORK_TIME: 'timer_totalWorkTime',
+    PAUSED_REMAINING: 'timer_pausedRemaining',
+};
+
+// LocalStorage に状態を保存
+function saveState(): void {
+    localStorage.setItem(STORAGE_KEYS.IS_RUNNING, String(isRunning));
+    localStorage.setItem(STORAGE_KEYS.SEQUENCE_INDEX, String(sequenceIndex));
+    localStorage.setItem(STORAGE_KEYS.PHASE_START_TIME, String(phaseStartTime));
+    localStorage.setItem(STORAGE_KEYS.TOTAL_DURATION, String(totalTimeInSeconds));
+    localStorage.setItem(STORAGE_KEYS.TOTAL_WORK_TIME, String(totalWorkTimeInSeconds));
+    localStorage.setItem(STORAGE_KEYS.PAUSED_REMAINING, String(pausedRemaining));
+}
+
+// LocalStorage から状態を復元
+function loadState(): boolean {
+    const savedIsRunning = localStorage.getItem(STORAGE_KEYS.IS_RUNNING);
+    if (savedIsRunning === null) return false;
+
+    isRunning = savedIsRunning === 'true';
+    sequenceIndex = parseInt(localStorage.getItem(STORAGE_KEYS.SEQUENCE_INDEX) || '0');
+    phaseStartTime = parseInt(localStorage.getItem(STORAGE_KEYS.PHASE_START_TIME) || '0');
+    totalTimeInSeconds = parseInt(localStorage.getItem(STORAGE_KEYS.TOTAL_DURATION) || String(sequence[0].duration));
+    totalWorkTimeInSeconds = parseInt(localStorage.getItem(STORAGE_KEYS.TOTAL_WORK_TIME) || '0');
+    pausedRemaining = parseInt(localStorage.getItem(STORAGE_KEYS.PAUSED_REMAINING) || '0');
+
+    // インデックスの妥当性チェック
+    if (sequenceIndex >= sequence.length) {
+        clearState();
+        return false;
+    }
+
+    return true;
+}
+
+// LocalStorage の状態をクリア
+function clearState(): void {
+    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+}
 
 // 音声設定
 const audioSettings = {
@@ -168,9 +217,10 @@ function updateDisplay(): void {
     minutesEl.textContent = String(minutes).padStart(2, '0');
     secondsEl.textContent = String(seconds).padStart(2, '0');
 
-    // 総作業時間の表示更新
-    const totalHours = Math.floor(totalWorkTimeInSeconds / 3600);
-    const totalMinutes = Math.floor((totalWorkTimeInSeconds % 3600) / 60);
+    // 総作業時間の表示更新（累積時間 + 現在のフェーズの経過時間）
+    const displayWorkTime = totalWorkTimeInSeconds + currentPhaseWorkTime;
+    const totalHours = Math.floor(displayWorkTime / 3600);
+    const totalMinutes = Math.floor((displayWorkTime % 3600) / 60);
     if (totalTimeTextEl) {
         totalTimeTextEl.textContent = `総作業時間: ${totalHours}:${String(totalMinutes).padStart(2, '0')}`;
     }
@@ -258,26 +308,47 @@ function nextSequence(): void {
     if (sequenceIndex >= sequence.length) {
         if (timerId) clearInterval(timerId);
         isRunning = false;
+        clearState(); // 完了時は状態をクリア
         updateButtonIcon();
         return;
     }
     const nextPhase = sequence[sequenceIndex];
     timeInSeconds = nextPhase.duration;
     totalTimeInSeconds = nextPhase.duration;
+    phaseStartTime = Date.now(); // 新しいフェーズの開始時刻を設定
     playVoice(nextPhase.voice);
     updateDisplay();
+    saveState();
 }
 
-// カウントダウン関数
+// カウントダウン関数（Date.nowベースの正確な時間管理）
 function countdown(): void {
-    if (timeInSeconds > 0) {
-        timeInSeconds--;
+    if (!isRunning) return;
+
+    const now = Date.now();
+    const elapsed = Math.floor((now - phaseStartTime) / 1000);
+    const remaining = totalTimeInSeconds - elapsed;
+
+    if (remaining > 0) {
+        timeInSeconds = remaining;
+
         // 集中時間の場合のみ総作業時間をカウント
         if (sequence[sequenceIndex].type === '集中') {
-            totalWorkTimeInSeconds++;
+            currentPhaseWorkTime = elapsed;
         }
+
         updateDisplay();
+        saveState(); // 状態を保存
     } else {
+        timeInSeconds = 0;
+
+        // フェーズ完了時に作業時間を加算
+        if (sequence[sequenceIndex].type === '集中') {
+            totalWorkTimeInSeconds += totalTimeInSeconds;
+            currentPhaseWorkTime = 0;
+        }
+
+        updateDisplay();
         nextSequence();
     }
 }
@@ -298,12 +369,20 @@ startPauseBtn.addEventListener('click', (): void => {
     isRunning = !isRunning;
     if (isRunning) {
         // 最初の再生
-        if (timeInSeconds === sequence[sequenceIndex].duration) {
+        if (pausedRemaining === 0 && timeInSeconds === sequence[sequenceIndex].duration) {
             playVoice(sequence[sequenceIndex].voice);
+            phaseStartTime = Date.now();
+        } else {
+            // 一時停止から再開の場合：経過時間を考慮して開始時刻を調整
+            const elapsed = totalTimeInSeconds - timeInSeconds;
+            phaseStartTime = Date.now() - (elapsed * 1000);
         }
-        timerId = window.setInterval(countdown, 1000);
+        timerId = window.setInterval(countdown, 100); // 100msごとに更新
+        saveState();
     } else {
         if (timerId) clearInterval(timerId);
+        pausedRemaining = timeInSeconds;
+        saveState();
     }
     updateButtonIcon();
 });
@@ -316,6 +395,10 @@ resetBtn.addEventListener('click', (): void => {
     timeInSeconds = sequence[0].duration;
     totalTimeInSeconds = sequence[0].duration;
     totalWorkTimeInSeconds = 0; // 総作業時間もリセット
+    currentPhaseWorkTime = 0;
+    phaseStartTime = 0;
+    pausedRemaining = 0;
+    clearState(); // LocalStorageもクリア
     cycleTextEl.textContent = 'セット: 0/4 | サイクル: 0/2';
     if (phaseIndicatorEl) {
         phaseIndicatorEl.textContent = '集中タイム';
@@ -324,6 +407,34 @@ resetBtn.addEventListener('click', (): void => {
     updateDisplay();
 });
 
-// 初期表示
-updateDisplay();
-updateButtonIcon();
+// 初期化処理
+function initialize(): void {
+    // LocalStorageから状態を復元
+    const restored = loadState();
+
+    if (restored && isRunning) {
+        // 実行中だった場合、現在時刻から残り時間を再計算
+        const now = Date.now();
+        const elapsed = Math.floor((now - phaseStartTime) / 1000);
+        const remaining = totalTimeInSeconds - elapsed;
+
+        if (remaining > 0) {
+            timeInSeconds = remaining;
+            // タイマーを再開
+            timerId = window.setInterval(countdown, 100);
+        } else {
+            // 時間切れの場合は次のフェーズへ
+            timeInSeconds = 0;
+            nextSequence();
+        }
+    } else if (restored && !isRunning) {
+        // 一時停止中だった場合
+        timeInSeconds = pausedRemaining;
+    }
+
+    updateDisplay();
+    updateButtonIcon();
+}
+
+// ページロード時に初期化
+initialize();
