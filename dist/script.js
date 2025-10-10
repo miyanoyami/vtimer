@@ -47,8 +47,23 @@ var phaseIndicatorEl = document.getElementById('phase-indicator');
 var playIconEl = document.getElementById('play-icon');
 var pauseIconEl = document.getElementById('pause-icon');
 var mobileNoticeEl = document.getElementById('mobile-notice');
-// デバッグモード設定（true: 5秒単位、false: 本番時間）
-var DEBUG_MODE = false;
+// デバッグモード設定（URLクエリパラメータで制御）
+// 使用例: ?debug=1（高速）, ?debug=2（1分単位）, パラメータなし（本番）
+var urlParams = new URLSearchParams(window.location.search);
+var debugParam = urlParams.get('debug');
+var DEBUG_LEVEL = debugParam ? parseInt(debugParam) : 0;
+if (DEBUG_LEVEL === 1) {
+    console.log('%c デバッグモード（高速）', 'color: #ff6b6b; font-weight: bold; font-size: 14px;');
+    console.log('作業時間: 15秒 | 短休憩: 5秒 | 長休憩: 10秒');
+}
+else if (DEBUG_LEVEL === 2) {
+    console.log('%c デバッグモード（1分単位）', 'color: #ffa94d; font-weight: bold; font-size: 14px;');
+    console.log('作業時間: 1分 | 短休憩: 15秒 | 長休憩: 30秒');
+}
+else {
+    console.log('%c 本番モード', 'color: #51cf66; font-weight: bold; font-size: 14px;');
+    console.log('作業時間: 25分 | 短休憩: 5分 | 長休憩: 15分');
+}
 // VTuber IDをHTMLから取得
 var vtuberId = document.body.dataset.vtuberId;
 if (!vtuberId) {
@@ -58,10 +73,8 @@ if (!vtuberId) {
 var vtuberThemes = {
     'yaoaoi': 'forest', // Ocean Blue (デフォルト)
     'niwawamizuku': 'ocean', // Sakura Pink
-    'sakura': 'sakura', // Sakura Pink
-    'forest': 'forest', // Forest Green
-    'sunset': 'sunset', // Sunset Orange
-    'violet': 'violet' // Violet Night
+    'suwaponta': 'wood',
+    'naokurotama': 'black',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
@@ -82,40 +95,48 @@ if (vtuberId) {
 var WORK_TIME = 25 * 60; // 25分
 var SHORT_BREAK = 5 * 60; // 5分
 var LONG_BREAK = 15 * 60; // 15分
-// デバッグ用時間（5秒単位）
-var DEBUG_WORK_TIME = 25; // 25秒
-var DEBUG_SHORT_BREAK = 5; // 5秒
-var DEBUG_LONG_BREAK = 15; // 15秒
-// デバッグモードに応じた時間を返す関数
-function getTime(prodTime, debugTime) {
-    return DEBUG_MODE ? debugTime : prodTime;
+// デバッグ用時間（レベル1: 高速）
+var DEBUG1_WORK_TIME = 15; // 15秒
+var DEBUG1_SHORT_BREAK = 5; // 5秒
+var DEBUG1_LONG_BREAK = 10; // 10秒
+// デバッグ用時間（レベル2: 1分単位）
+var DEBUG2_WORK_TIME = 60; // 1分
+var DEBUG2_SHORT_BREAK = 15; // 15秒
+var DEBUG2_LONG_BREAK = 30; // 30秒
+// デバッグレベルに応じた時間を返す関数
+function getTime(prodTime, debug1Time, debug2Time) {
+    if (DEBUG_LEVEL === 1)
+        return debug1Time;
+    if (DEBUG_LEVEL === 2)
+        return debug2Time;
+    return prodTime;
 }
 // タイマーシーケンス (全16フェーズ)
 var sequence = [
     // 1st Cycle - Set 1
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'start.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break1.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'start.mp3' },
+    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'break1.mp3' },
     // 1st Cycle - Set 2
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume1.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break2.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume1.mp3' },
+    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'break2.mp3' },
     // 1st Cycle - Set 3
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume2.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break3.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume2.mp3' },
+    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'break3.mp3' },
     // 1st Cycle - Set 4
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume3.mp3' },
-    { type: '長休憩', duration: getTime(LONG_BREAK, DEBUG_LONG_BREAK), voice: 'long_break.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume3.mp3' },
+    { type: '長休憩', duration: getTime(LONG_BREAK, DEBUG1_LONG_BREAK, DEBUG2_LONG_BREAK), voice: 'long_break.mp3' },
     // 2nd Cycle - Set 1
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume1.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break1.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume1.mp3' },
+    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'break1.mp3' },
     // 2nd Cycle - Set 2
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume2.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break2.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume2.mp3' },
+    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'break2.mp3' },
     // 2nd Cycle - Set 3
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume3.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break3.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume3.mp3' },
+    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'break3.mp3' },
     // 2nd Cycle - Set 4
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume4.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'complete.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume4.mp3' },
+    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'complete.mp3' },
 ];
 // 状態管理変数に型を付与
 var timerId = null;
@@ -188,25 +209,46 @@ function releaseWakeLock() {
 }
 // LocalStorage キー
 var STORAGE_KEYS = {
+    VTUBER_ID: 'timer_vtuberId',
     IS_RUNNING: 'timer_isRunning',
     SEQUENCE_INDEX: 'timer_sequenceIndex',
     PHASE_START_TIME: 'timer_phaseStartTime',
     TOTAL_DURATION: 'timer_totalDuration',
     TOTAL_WORK_TIME: 'timer_totalWorkTime',
     PAUSED_REMAINING: 'timer_pausedRemaining',
+    LAST_ACCESS_TIME: 'timer_lastAccessTime',
 };
 // LocalStorage に状態を保存
 function saveState() {
+    localStorage.setItem(STORAGE_KEYS.VTUBER_ID, vtuberId || '');
     localStorage.setItem(STORAGE_KEYS.IS_RUNNING, String(isRunning));
     localStorage.setItem(STORAGE_KEYS.SEQUENCE_INDEX, String(sequenceIndex));
     localStorage.setItem(STORAGE_KEYS.PHASE_START_TIME, String(phaseStartTime));
     localStorage.setItem(STORAGE_KEYS.TOTAL_DURATION, String(totalTimeInSeconds));
     localStorage.setItem(STORAGE_KEYS.TOTAL_WORK_TIME, String(totalWorkTimeInSeconds));
     localStorage.setItem(STORAGE_KEYS.PAUSED_REMAINING, String(pausedRemaining));
+    localStorage.setItem(STORAGE_KEYS.LAST_ACCESS_TIME, String(Date.now()));
 }
 // LocalStorage から状態を復元
 function loadState() {
+    var savedVtuberId = localStorage.getItem(STORAGE_KEYS.VTUBER_ID);
     var savedIsRunning = localStorage.getItem(STORAGE_KEYS.IS_RUNNING);
+    var savedLastAccessTime = localStorage.getItem(STORAGE_KEYS.LAST_ACCESS_TIME);
+    // VTuber IDが変わった場合はリセット
+    if (savedVtuberId !== vtuberId) {
+        clearState();
+        return false;
+    }
+    // 6時間以上経過している場合はリセット
+    if (savedLastAccessTime) {
+        var lastAccess = parseInt(savedLastAccessTime);
+        var now = Date.now();
+        var sixHours = 6 * 60 * 60 * 1000;
+        if (now - lastAccess > sixHours) {
+            clearState();
+            return false;
+        }
+    }
     if (savedIsRunning === null)
         return false;
     isRunning = savedIsRunning === 'true';

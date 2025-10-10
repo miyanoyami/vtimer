@@ -1,79 +1,9 @@
-#!/bin/bash
-
-# 新しいVTuberを追加するスクリプト
-# ディレクトリと音声・画像ファイルが既に存在することを前提に、<英名>.html を生成します
-
-set -e
-
-# 使用方法を表示
-usage() {
-    echo "使用方法: $0 <英名> <表示名> <テーマ>"
-    echo ""
-    echo "引数:"
-    echo "  英名     : ページのパス名（例: yaoaoi）"
-    echo "  表示名   : タイトルやリンクに表示する名前（例: 八百アオヰ）"
-    echo "  テーマ   : テーマカラー（sakura/ocean/forest/sunset/violet/white/black/wood）"
-    echo ""
-    echo "例:"
-    echo "  $0 example 例太郎 ocean"
-    echo ""
-    echo "注意:"
-    echo "  timers/<英名>/ ディレクトリと以下のファイルが既に存在することを前提とします:"
-    echo "    - <英名>.jpg (画像)"
-    echo "    - start.mp3, break1.mp3, break2.mp3, break3.mp3 (音声)"
-    echo "    - resume1.mp3, resume2.mp3, resume3.mp3, resume4.mp3 (音声)"
-    echo "    - long_break.mp3, complete.mp3 (音声)"
-    exit 1
-}
-
-# 引数チェック
-if [ $# -ne 3 ]; then
-    usage
-fi
-
-SLUG=$1
-NAME=$2
-THEME=$3
-
-# テーマの妥当性チェック
-VALID_THEMES=("sakura" "ocean" "forest" "sunset" "violet" "white" "black" "wood")
-if [[ ! " ${VALID_THEMES[@]} " =~ " ${THEME} " ]]; then
-    echo "エラー: 無効なテーマです。以下から選択してください:"
-    echo "  sakura, ocean, forest, sunset, violet, white, black, wood"
-    exit 1
-fi
-
-# ディレクトリの存在確認
-if [ ! -d "timers/${SLUG}" ]; then
-    echo "エラー: timers/${SLUG}/ ディレクトリが存在しません"
-    echo "先にディレクトリと音声・画像ファイルを配置してください"
-    exit 1
-fi
-
-# HTMLファイルが既に存在するかチェック
-if [ -f "timers/${SLUG}/${SLUG}.html" ]; then
-    read -p "timers/${SLUG}/${SLUG}.html は既に存在します。上書きしますか? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "処理を中止しました"
-        exit 1
-    fi
-fi
-
-echo "VTuberを追加します..."
-echo "  英名: ${SLUG}"
-echo "  表示名: ${NAME}"
-echo "  テーマ: ${THEME}"
-echo ""
-
-# タイマーページを作成
-cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>おしえーる - VTUBER_NAME</title>
+    <title>おしえーる - 黒玉なお</title>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-D5G5EXH18M"></script>
@@ -103,7 +33,7 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
     <link rel="stylesheet" href="../../assets/themes.css">
     <link rel="stylesheet" href="../../assets/style.css">
 </head>
-<body data-vtuber-id="VTUBER_SLUG" class="min-h-screen flex items-center justify-center p-4">
+<body data-vtuber-id="naokurotama" class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-lg">
         <!-- ヘッダー -->
         <div class="text-center mb-6">
@@ -117,7 +47,7 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
             </div>
             <h1 class="text-2xl md:text-3xl font-bold mb-2">
                 <span class="text-gradient-primary">
-                    VTUBER_NAME
+                    黒玉なお
                 </span>
             </h1>
         </div>
@@ -235,98 +165,3 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
     <script src="../../dist/script.js"></script>
 </body>
 </html>
-EOF
-
-# プレースホルダーを実際の値に置換
-sed -i '' "s/VTUBER_NAME/${NAME}/g" "timers/${SLUG}/${SLUG}.html"
-sed -i '' "s/VTUBER_SLUG/${SLUG}/g" "timers/${SLUG}/${SLUG}.html"
-
-echo "✓ timers/${SLUG}/${SLUG}.html を作成しました"
-
-# src/script.ts にテーママッピングを追加
-echo ""
-echo "src/script.ts にテーママッピングを追加しています..."
-
-# vtuberThemes オブジェクトに追加
-if grep -q "'${SLUG}':" src/script.ts; then
-    echo "  注意: '${SLUG}' は既に src/script.ts に存在します。スキップします。"
-else
-    # 閉じ括弧の前に新しいエントリを追加
-    sed -i '' "/^const vtuberThemes: Record<string, string> = {/,/^};/ {
-        /^};/i\\
-    '${SLUG}': '${THEME}',
-    }" src/script.ts
-    echo "✓ src/script.ts に '${SLUG}': '${THEME}' を追加しました"
-fi
-
-# 画像ファイルを自動検出
-echo ""
-echo "画像ファイルを検出しています..."
-
-IMAGE_FILE=""
-for ext in jpg jpeg JPG JPEG png PNG; do
-    if [ -f "timers/${SLUG}/${SLUG}.${ext}" ]; then
-        IMAGE_FILE="${SLUG}.${ext}"
-        echo "✓ 画像ファイルを検出しました: ${IMAGE_FILE}"
-        break
-    fi
-done
-
-if [ -z "$IMAGE_FILE" ]; then
-    echo "  警告: timers/${SLUG}/ 内に画像ファイルが見つかりません"
-    echo "  対応形式: .jpg, .jpeg, .JPG, .JPEG, .png, .PNG"
-    echo "  デフォルトのプレースホルダーを使用します"
-    IMAGE_FILE="${SLUG}.jpg"
-fi
-
-# index.html にリンクを追加
-echo ""
-echo "index.html にリンクを追加しています..."
-
-# 既にリンクが存在するかチェック
-if grep -q "timers/${SLUG}/" index.html; then
-    echo "  注意: timers/${SLUG}/ へのリンクは既に index.html に存在します。スキップします。"
-else
-    # VTuberリンクのセクションを見つけて、</div>の前に追加
-    # タイマー選択グリッドの最後の</a>の後に新しいリンクを追加
-    LINK_HTML="            <!-- ${SLUG} -->\\
-            <a href=\"timers/${SLUG}/${SLUG}.html\"\\
-               class=\"group bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-blue-200/50\\
-                      hover:bg-white/90 hover:shadow-md transition-all duration-200 hover:scale-105 flex flex-col items-center\">\\
-                \\
-                <div class=\"w-12 h-12 rounded-full overflow-hidden border border-blue-200/70 mb-2\">\\
-                    <img src=\"timers/${SLUG}/${IMAGE_FILE}\"\\
-                         alt=\"${NAME}\"\\
-                         class=\"w-full h-full object-cover\"\\
-                         onerror=\"this.parentElement.innerHTML='<div class=\&quot;w-full h-full bg-blue-100 flex items-center justify-center\&quot;><svg class=\&quot;w-6 h-6 text-blue-600\&quot; fill=\&quot;none\&quot; stroke=\&quot;currentColor\&quot; viewBox=\&quot;0 0 24 24\&quot;><path stroke-linecap=\&quot;round\&quot; stroke-linejoin=\&quot;round\&quot; stroke-width=\&quot;2\&quot; d=\&quot;M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\&quot;/></svg></div>'\">\\
-                </div>\\
-                <span class=\"text-xs font-medium text-gray-700 text-center leading-tight\">${NAME}</span>\\
-            </a>\\
-"
-
-    # タイマー選択グリッドの終了タグの前に挿入
-    sed -i '' "/<!-- Available theme templates/i\\
-${LINK_HTML}
-" index.html
-
-    echo "✓ index.html に ${NAME} へのリンクを追加しました (画像: ${IMAGE_FILE})"
-fi
-
-# ビルド実行
-echo ""
-echo "TypeScript をビルドしています..."
-npm run build
-
-echo ""
-echo "========================================="
-echo "完了しました！"
-echo "========================================="
-echo ""
-echo "以下のファイルが更新されました:"
-echo "  ✓ timers/${SLUG}/${SLUG}.html"
-echo "  ✓ src/script.ts"
-echo "  ✓ index.html"
-echo "  ✓ dist/script.js (ビルド済み)"
-echo ""
-echo "${NAME} のタイマーが利用可能になりました！"
-echo ""

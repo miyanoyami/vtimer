@@ -45,7 +45,6 @@
 
 /* プログレスサークルのパルス */
 .progress-pulse {
-    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
     animation: pulse 2s infinite;
 }
 

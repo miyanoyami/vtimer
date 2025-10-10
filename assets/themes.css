@@ -152,6 +152,25 @@
     --progress-glow: rgba(96, 165, 250, 0.5);
 }
 
+/* テーマ8: Warm Wood */
+[data-theme="wood"] {
+    --bg-start: #fef3c7;
+    --bg-middle: #d97706;
+    --bg-end: #fbbf24;
+    --primary-start: #92400e;
+    --primary-end: #b45309;
+    --secondary-start: #d97706;
+    --secondary-end: #fbbf24;
+    --accent-color: #78350f;
+    --text-primary: #1c1917;
+    --text-secondary: #44403c;
+    --text-accent: #78350f;
+    --container-bg: rgba(254, 243, 199, 0.85);
+    --border-color: rgba(146, 64, 14, 0.3);
+    --shadow-color: rgba(146, 64, 14, 0.15);
+    --progress-glow: rgba(217, 119, 6, 0.4);
+}
+
 /* 背景グラデーションの適用 */
 body {
     background: linear-gradient(135deg, var(--bg-start), var(--bg-middle), var(--bg-end));
@@ -177,7 +196,6 @@ body {
 
 /* プログレスサークルのカスタマイズ */
 .progress-circle {
-    filter: drop-shadow(0 0 8px var(--progress-glow));
 }
 
 /* アニメーションのカスタマイズ */
