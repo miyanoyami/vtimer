@@ -84,22 +84,7 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
       gtag('config', 'G-D5G5EXH18M');
     </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'mono': ['Monaco', 'Menlo', 'Ubuntu Mono', 'monospace'],
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 2s infinite',
-                        'bounce-gentle': 'bounce 1s ease-in-out infinite',
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="../../assets/tailwind.css?v=CACHE_VERSION">
     <link rel="stylesheet" href="../../assets/themes.css?v=CACHE_VERSION">
     <link rel="stylesheet" href="../../assets/style.css?v=CACHE_VERSION">
 </head>

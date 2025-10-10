@@ -643,19 +643,29 @@ function showMobileNotice(): void {
     }
 }
 
-// 5連続クリックでデバッグモード切り替え（隠しコマンド）
+// 2連続クリックでデバッグモード切り替え（隠しコマンド）
 let clickCount = 0;
 let clickTimer: number | null = null;
+let lastClickTime = 0;
 
 phaseIndicatorEl.addEventListener('click', (): void => {
-    clickCount++;
+    const now = Date.now();
+    const timeSinceLastClick = now - lastClickTime;
+    lastClickTime = now;
+
+    // ダブルクリック判定（500ms以内）
+    if (timeSinceLastClick < 500) {
+        clickCount++;
+    } else {
+        clickCount = 1;
+    }
 
     if (clickTimer) {
         clearTimeout(clickTimer);
     }
 
-    if (clickCount >= 5) {
-        // 5回クリックされたらデバッグモードを切り替え
+    if (clickCount >= 2) {
+        // 2回クリックされたらデバッグモードを切り替え
         const currentUrl = new URL(window.location.href);
         const currentDebug = currentUrl.searchParams.get('debug');
 
@@ -675,10 +685,10 @@ phaseIndicatorEl.addEventListener('click', (): void => {
         return;
     }
 
-    // 1秒以内に次のクリックがなければカウントをリセット
+    // 500ms以内に次のクリックがなければカウントをリセット
     clickTimer = window.setTimeout(() => {
         clickCount = 0;
-    }, 1000);
+    }, 500);
 });
 
 // ページロード時に初期化

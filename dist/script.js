@@ -621,16 +621,26 @@ function showMobileNotice() {
         console.log('スマートフォンを検出しました。注意書きを表示します。');
     }
 }
-// 5連続クリックでデバッグモード切り替え（隠しコマンド）
+// 2連続クリックでデバッグモード切り替え（隠しコマンド）
 var clickCount = 0;
 var clickTimer = null;
+var lastClickTime = 0;
 phaseIndicatorEl.addEventListener('click', function () {
-    clickCount++;
+    var now = Date.now();
+    var timeSinceLastClick = now - lastClickTime;
+    lastClickTime = now;
+    // ダブルクリック判定（500ms以内）
+    if (timeSinceLastClick < 500) {
+        clickCount++;
+    }
+    else {
+        clickCount = 1;
+    }
     if (clickTimer) {
         clearTimeout(clickTimer);
     }
-    if (clickCount >= 5) {
-        // 5回クリックされたらデバッグモードを切り替え
+    if (clickCount >= 2) {
+        // 2回クリックされたらデバッグモードを切り替え
         var currentUrl = new URL(window.location.href);
         var currentDebug = currentUrl.searchParams.get('debug');
         if (!currentDebug || currentDebug === '0') {
@@ -649,10 +659,10 @@ phaseIndicatorEl.addEventListener('click', function () {
         window.location.href = currentUrl.toString();
         return;
     }
-    // 1秒以内に次のクリックがなければカウントをリセット
+    // 500ms以内に次のクリックがなければカウントをリセット
     clickTimer = window.setTimeout(function () {
         clickCount = 0;
-    }, 1000);
+    }, 500);
 });
 // ページロード時に初期化
 initialize();
