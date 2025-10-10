@@ -284,16 +284,20 @@ function unlockAudio() {
     if (!audioPlayer) {
         audioPlayer = new Audio();
     }
-    // 無音を再生してアンロック
+    // data URI で無音の音声を作成してアンロック
+    audioPlayer.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    audioPlayer.volume = 0.01; // 音量を最小に
     var silentPromise = audioPlayer.play();
     if (silentPromise !== undefined) {
         silentPromise.then(function () {
             audioPlayer.pause();
             audioPlayer.currentTime = 0;
+            audioPlayer.volume = 1.0; // 音量を元に戻す
             audioUnlocked = true;
             console.log('音声コンテキストをアンロックしました');
         }).catch(function () {
-            console.warn('音声アンロックに失敗しました');
+            // エラーでも問題ない（後続の再生で自動的にアンロックされる）
+            audioUnlocked = true;
         });
     }
 }
@@ -617,6 +621,39 @@ function showMobileNotice() {
         console.log('スマートフォンを検出しました。注意書きを表示します。');
     }
 }
+// 5連続クリックでデバッグモード切り替え（隠しコマンド）
+var clickCount = 0;
+var clickTimer = null;
+phaseIndicatorEl.addEventListener('click', function () {
+    clickCount++;
+    if (clickTimer) {
+        clearTimeout(clickTimer);
+    }
+    if (clickCount >= 5) {
+        // 5回クリックされたらデバッグモードを切り替え
+        var currentUrl = new URL(window.location.href);
+        var currentDebug = currentUrl.searchParams.get('debug');
+        if (!currentDebug || currentDebug === '0') {
+            // デバッグモード1に切り替え
+            currentUrl.searchParams.set('debug', '1');
+        }
+        else if (currentDebug === '1') {
+            // デバッグモード2に切り替え
+            currentUrl.searchParams.set('debug', '2');
+        }
+        else {
+            // 通常モードに戻す
+            currentUrl.searchParams.delete('debug');
+        }
+        // ページをリロード
+        window.location.href = currentUrl.toString();
+        return;
+    }
+    // 1秒以内に次のクリックがなければカウントをリセット
+    clickTimer = window.setTimeout(function () {
+        clickCount = 0;
+    }, 1000);
+});
 // ページロード時に初期化
 initialize();
 showMobileNotice();
