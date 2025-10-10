@@ -517,6 +517,12 @@ resetBtn.addEventListener('click', (): void => {
 
 // 初期化処理
 function initialize(): void {
+    // デバッグモードの場合は常にlocalStorageをクリア
+    if (DEBUG_LEVEL > 0) {
+        clearState();
+        console.log('デバッグモード: localStorage をクリアしました');
+    }
+
     // LocalStorageから状態を復元
     const restored = loadState();
 

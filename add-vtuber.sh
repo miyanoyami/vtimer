@@ -100,8 +100,8 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
             }
         }
     </script>
-    <link rel="stylesheet" href="../../assets/themes.css">
-    <link rel="stylesheet" href="../../assets/style.css">
+    <link rel="stylesheet" href="../../assets/themes.css?v=CACHE_VERSION">
+    <link rel="stylesheet" href="../../assets/style.css?v=CACHE_VERSION">
 </head>
 <body data-vtuber-id="VTUBER_SLUG" class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-lg">
@@ -232,14 +232,16 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
         </div>
     </div>
 
-    <script src="../../dist/script.js"></script>
+    <script src="../../dist/script.js?v=CACHE_VERSION"></script>
 </body>
 </html>
 EOF
 
 # プレースホルダーを実際の値に置換
+CACHE_VERSION=$(date +%s)
 sed -i '' "s/VTUBER_NAME/${NAME}/g" "timers/${SLUG}/${SLUG}.html"
 sed -i '' "s/VTUBER_SLUG/${SLUG}/g" "timers/${SLUG}/${SLUG}.html"
+sed -i '' "s/CACHE_VERSION/${CACHE_VERSION}/g" "timers/${SLUG}/${SLUG}.html"
 
 echo "✓ timers/${SLUG}/${SLUG}.html を作成しました"
 

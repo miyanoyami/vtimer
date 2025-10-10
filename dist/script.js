@@ -513,6 +513,11 @@ resetBtn.addEventListener('click', function () {
 });
 // 初期化処理
 function initialize() {
+    // デバッグモードの場合は常にlocalStorageをクリア
+    if (DEBUG_LEVEL > 0) {
+        clearState();
+        console.log('デバッグモード: localStorage をクリアしました');
+    }
     // LocalStorageから状態を復元
     var restored = loadState();
     if (restored) {
