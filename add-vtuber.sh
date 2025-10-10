@@ -35,9 +35,9 @@ if [[ ! " ${VALID_THEMES[@]} " =~ " ${THEME} " ]]; then
     exit 1
 fi
 
-# ファイルが既に存在するかチェック
-if [ -f "timers/${SLUG}.html" ]; then
-    echo "エラー: timers/${SLUG}.html は既に存在します"
+# ディレクトリが既に存在するかチェック
+if [ -d "timers/${SLUG}" ]; then
+    echo "エラー: timers/${SLUG}/ は既に存在します"
     exit 1
 fi
 
@@ -47,14 +47,18 @@ echo "  表示名: ${NAME}"
 echo "  テーマ: ${THEME}"
 echo ""
 
+# VTuber用ディレクトリを作成
+mkdir -p "timers/${SLUG}"
+echo "✓ timers/${SLUG}/ ディレクトリを作成しました"
+
 # タイマーページを作成
-cat > "timers/${SLUG}.html" << EOF
+cat > "timers/${SLUG}/index.html" << 'EOF'
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>おしえーる - ${NAME}</title>
+    <title>おしえーる - VTUBER_NAME</title>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-D5G5EXH18M"></script>
@@ -81,15 +85,15 @@ cat > "timers/${SLUG}.html" << EOF
             }
         }
     </script>
-    <link rel="stylesheet" href="../assets/themes.css">
-    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../../assets/themes.css">
+    <link rel="stylesheet" href="../../assets/style.css">
 </head>
-<body data-vtuber-id="${SLUG}" class="min-h-screen flex items-center justify-center p-4">
+<body data-vtuber-id="VTUBER_SLUG" class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-lg">
         <!-- ヘッダー -->
         <div class="text-center mb-6">
             <div class="mb-3">
-                <a href="../index.html" class="inline-flex items-center text-theme-secondary/40 hover:text-theme-secondary/70 text-xs transition-colors duration-200">
+                <a href="../../index.html" class="inline-flex items-center text-theme-secondary/40 hover:text-theme-secondary/70 text-xs transition-colors duration-200">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
@@ -98,7 +102,7 @@ cat > "timers/${SLUG}.html" << EOF
             </div>
             <h1 class="text-2xl md:text-3xl font-bold mb-2">
                 <span class="text-gradient-primary">
-                    ${NAME}
+                    VTUBER_NAME
                 </span>
             </h1>
         </div>
@@ -146,7 +150,7 @@ cat > "timers/${SLUG}.html" << EOF
                                     <span id="minutes">25</span><span class="text-theme-accent">:</span><span id="seconds">00</span>
                                 </div>
                                 <div class="text-theme-secondary text-xs uppercase tracking-wider font-semibold" id="phase-indicator">
-                                    作業中
+                                    集中タイム
                                 </div>
                             </div>
                         </div>
@@ -186,40 +190,57 @@ cat > "timers/${SLUG}.html" << EOF
                     <div class="absolute inset-0 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                 </button>
             </div>
+
+            <!-- スマートフォン向け注意書き -->
+            <div id="mobile-notice" class="mt-6 hidden">
+                <div class="theme-container backdrop-blur-sm rounded-lg p-4 border border-yellow-500/30 bg-yellow-500/10">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="text-yellow-500 text-xs font-semibold mb-1">スマートフォンでご利用の方へ</p>
+                            <p class="text-theme-secondary text-xs leading-relaxed">
+                                スマホの仕様上、このページを開いていないとタイマーが停止します。タイマー動作中は画面がロックされないので、画面輝度を下げることをおすすめします。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- フッター -->
         <div class="text-center mt-6">
+            <p class="text-theme-secondary/70 text-xs">
+
+            </p>
         </div>
     </div>
 
-    <script src="../dist/script.js"></script>
+    <script src="../../dist/script.js"></script>
 </body>
 </html>
 EOF
 
-echo "✓ timers/${SLUG}.html を作成しました"
+# プレースホルダーを実際の値に置換
+sed -i '' "s/VTUBER_NAME/${NAME}/g" "timers/${SLUG}/index.html"
+sed -i '' "s/VTUBER_SLUG/${SLUG}/g" "timers/${SLUG}/index.html"
 
-# 画像ファイル用の場所を確認
-if [ ! -d "assets/images" ]; then
-    mkdir -p "assets/images"
-fi
-echo "✓ assets/images/ ディレクトリを確認しました"
+echo "✓ timers/${SLUG}/index.html を作成しました"
 
-# src/script.ts にテーママッピングを追加する指示を表示
 echo ""
 echo "========================================="
 echo "次の手順を実行してください:"
 echo "========================================="
 echo ""
 echo "1. 画像ファイルを配置:"
-echo "   assets/images/${SLUG}.jpg"
+echo "   timers/${SLUG}/${SLUG}.jpg"
 echo ""
-echo "2. 音声ファイルを配置 (voices/${SLUG}/ 内):"
+echo "2. 音声ファイルを配置 (timers/${SLUG}/ 内):"
 echo "   - start.mp3 (開始時)"
 echo "   - break1.mp3, break2.mp3, break3.mp3 (休憩時)"
-echo "   - resume1.mp3, resume2.mp3, resume3.mp3 (再開時)"
-echo "   - long_break1.mp3 (長休憩時)"
+echo "   - resume1.mp3, resume2.mp3, resume3.mp3, resume4.mp3 (再開時)"
+echo "   - long_break.mp3 (長休憩時)"
 echo "   - complete.mp3 (完了時)"
 echo ""
 echo "3. src/script.ts を編集:"
@@ -231,11 +252,11 @@ echo "   npm run build"
 echo ""
 echo "5. index.html にリンクを追加:"
 echo "   <!-- ${SLUG} -->"
-echo "   <a href=\"timers/${SLUG}.html\""
+echo "   <a href=\"timers/${SLUG}/\""
 echo "      class=\"group bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-blue-200/50"
 echo "             hover:bg-white/90 hover:shadow-md transition-all duration-200 hover:scale-105 flex flex-col items-center\">"
 echo "       <div class=\"w-12 h-12 rounded-full overflow-hidden border border-blue-200/70 mb-2\">"
-echo "           <img src=\"assets/images/${SLUG}.jpg\""
+echo "           <img src=\"timers/${SLUG}/${SLUG}.jpg\""
 echo "                alt=\"${NAME}\""
 echo "                class=\"w-full h-full object-cover\""
 echo "                onerror=\"this.parentElement.innerHTML='<div class=&quot;w-full h-full bg-blue-100 flex items-center justify-center&quot;><svg class=&quot;w-6 h-6 text-blue-600&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;><path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z&quot;/></svg></div>'\">"

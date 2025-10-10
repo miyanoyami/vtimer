@@ -10,6 +10,7 @@ const progressCircleEl = document.getElementById('progress-circle') as unknown a
 const phaseIndicatorEl = document.getElementById('phase-indicator') as HTMLElement;
 const playIconEl = document.getElementById('play-icon') as unknown as SVGPathElement;
 const pauseIconEl = document.getElementById('pause-icon') as unknown as SVGElement;
+const mobileNoticeEl = document.getElementById('mobile-notice') as HTMLElement;
 
 // シーケンスの型を定義
 interface SequencePhase {
@@ -87,7 +88,7 @@ const sequence: SequencePhase[] = [
 
     // 1st Cycle - Set 4
     { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume3.mp3' },
-    { type: '長休憩', duration: getTime(LONG_BREAK, DEBUG_LONG_BREAK), voice: 'long_break1.mp3' },
+    { type: '長休憩', duration: getTime(LONG_BREAK, DEBUG_LONG_BREAK), voice: 'long_break.mp3' },
 
     // 2nd Cycle - Set 1
     { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume1.mp3' },
@@ -102,7 +103,7 @@ const sequence: SequencePhase[] = [
     { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break3.mp3' },
 
     // 2nd Cycle - Set 4
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume3.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume4.mp3' },
     { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'complete.mp3' },
 ];
 
@@ -116,6 +117,41 @@ let totalWorkTimeInSeconds: number = 0; // 総作業時間（集中時間のみ�
 let phaseStartTime: number = 0; // フェーズ開始時刻（実時間）
 let pausedRemaining: number = 0; // 一時停止時の残り時間
 let currentPhaseWorkTime: number = 0; // 現在のフェーズで経過した作業時間
+
+// Wake Lock 関連の変数
+let wakeLock: WakeLockSentinel | null = null;
+
+// Wake Lock を取得する関数
+async function requestWakeLock(): Promise<void> {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock が有効になりました');
+
+            // Wake Lock が解放された場合のイベントリスナー
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock が解放されました');
+            });
+        } else {
+            console.warn('このブラウザは Wake Lock API をサポートしていません');
+        }
+    } catch (err) {
+        console.error('Wake Lock の取得に失敗:', err);
+    }
+}
+
+// Wake Lock を解放する関数
+async function releaseWakeLock(): Promise<void> {
+    if (wakeLock !== null) {
+        try {
+            await wakeLock.release();
+            wakeLock = null;
+            console.log('Wake Lock を解放しました');
+        } catch (err) {
+            console.error('Wake Lock の解放に失敗:', err);
+        }
+    }
+}
 
 // LocalStorage キー
 const STORAGE_KEYS = {
@@ -174,7 +210,7 @@ const audioSettings = {
 function playVoice(filename: string): void {
     if (!vtuberId) return; // IDがなければ何もしない
 
-    const audioPath = `../voices/${vtuberId}/${filename}`;
+    const audioPath = `${filename}`;
     const audio = new Audio(audioPath);
     
     // ファイル別の音量微調整
@@ -306,10 +342,16 @@ function updateAnimations(phaseType: '集中' | '休憩' | '長休憩'): void {
 function nextSequence(): void {
     sequenceIndex++;
     if (sequenceIndex >= sequence.length) {
-        if (timerId) clearInterval(timerId);
+        if (timerId) {
+            clearTimeout(timerId);
+            timerId = null;
+        }
         isRunning = false;
         clearState(); // 完了時は状態をクリア
         updateButtonIcon();
+
+        // タイマー完了時に Wake Lock を解放
+        releaseWakeLock();
         return;
     }
     const nextPhase = sequence[sequenceIndex];
@@ -319,6 +361,11 @@ function nextSequence(): void {
     playVoice(nextPhase.voice);
     updateDisplay();
     saveState();
+
+    // 次のカウントダウンをスケジュール
+    if (isRunning) {
+        timerId = window.setTimeout(countdown, 100);
+    }
 }
 
 // カウントダウン関数（Date.nowベースの正確な時間管理）
@@ -339,12 +386,15 @@ function countdown(): void {
 
         updateDisplay();
         saveState(); // 状態を保存
+
+        // setTimeout で次の更新をスケジュール（より正確）
+        timerId = window.setTimeout(countdown, 100);
     } else {
         timeInSeconds = 0;
 
-        // フェーズ完了時に作業時間を加算
+        // フェーズ完了時に作業時間を加算（経過時間を加算）
         if (sequence[sequenceIndex].type === '集中') {
-            totalWorkTimeInSeconds += totalTimeInSeconds;
+            totalWorkTimeInSeconds += elapsed; // 修正: totalTimeInSecondsではなくelapsed
             currentPhaseWorkTime = 0;
         }
 
@@ -377,19 +427,31 @@ startPauseBtn.addEventListener('click', (): void => {
             const elapsed = totalTimeInSeconds - timeInSeconds;
             phaseStartTime = Date.now() - (elapsed * 1000);
         }
-        timerId = window.setInterval(countdown, 100); // 100msごとに更新
+        countdown(); // setTimeoutを使うので直接呼び出し
         saveState();
+
+        // Wake Lock を取得
+        requestWakeLock();
     } else {
-        if (timerId) clearInterval(timerId);
+        if (timerId) {
+            clearTimeout(timerId); // setTimeoutに変更
+            timerId = null;
+        }
         pausedRemaining = timeInSeconds;
         saveState();
+
+        // Wake Lock を解放
+        releaseWakeLock();
     }
     updateButtonIcon();
 });
 
 // リセットボタンの処理
 resetBtn.addEventListener('click', (): void => {
-    if (timerId) clearInterval(timerId);
+    if (timerId) {
+        clearTimeout(timerId);
+        timerId = null;
+    }
     isRunning = false;
     sequenceIndex = 0;
     timeInSeconds = sequence[0].duration;
@@ -405,6 +467,9 @@ resetBtn.addEventListener('click', (): void => {
     }
     updateButtonIcon();
     updateDisplay();
+
+    // Wake Lock を解放
+    releaseWakeLock();
 });
 
 // 初期化処理
@@ -412,29 +477,79 @@ function initialize(): void {
     // LocalStorageから状態を復元
     const restored = loadState();
 
-    if (restored && isRunning) {
-        // 実行中だった場合、現在時刻から残り時間を再計算
-        const now = Date.now();
-        const elapsed = Math.floor((now - phaseStartTime) / 1000);
-        const remaining = totalTimeInSeconds - elapsed;
+    if (restored) {
+        // ページ遷移から戻ってきた場合
+        // 実行中だった場合でも一時停止状態にする
+        if (isRunning) {
+            const now = Date.now();
+            const elapsed = Math.floor((now - phaseStartTime) / 1000);
+            const remaining = totalTimeInSeconds - elapsed;
 
-        if (remaining > 0) {
-            timeInSeconds = remaining;
-            // タイマーを再開
-            timerId = window.setInterval(countdown, 100);
+            if (remaining > 0) {
+                timeInSeconds = remaining;
+                pausedRemaining = remaining;
+            } else {
+                // 時間切れの場合は0にリセット
+                timeInSeconds = 0;
+                pausedRemaining = 0;
+            }
+
+            // 一時停止状態にする
+            isRunning = false;
+            saveState();
         } else {
-            // 時間切れの場合は次のフェーズへ
-            timeInSeconds = 0;
-            nextSequence();
+            // 元々一時停止中だった場合
+            timeInSeconds = pausedRemaining;
         }
-    } else if (restored && !isRunning) {
-        // 一時停止中だった場合
-        timeInSeconds = pausedRemaining;
     }
 
     updateDisplay();
     updateButtonIcon();
 }
 
+// ページアンロード時の処理（リロード、閉じる、遷移時）
+window.addEventListener('beforeunload', (): void => {
+    if (isRunning) {
+        // 実行中の場合、現在の残り時間を計算して一時停止状態で保存
+        const now = Date.now();
+        const elapsed = Math.floor((now - phaseStartTime) / 1000);
+        const remaining = totalTimeInSeconds - elapsed;
+
+        if (remaining > 0) {
+            pausedRemaining = remaining;
+        } else {
+            pausedRemaining = 0;
+        }
+
+        isRunning = false;
+        saveState();
+    }
+
+    // Wake Lock を解放
+    releaseWakeLock();
+});
+
+// スマートフォン検出関数
+function isMobileDevice(): boolean {
+    // ユーザーエージェントによる判定
+    const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+    const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+
+    // タッチデバイスかつ画面幅が狭い場合もモバイルと判定
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isNarrowScreen = window.innerWidth <= 768;
+
+    return mobileRegex.test(userAgent) || (isTouchDevice && isNarrowScreen);
+}
+
+// モバイル注意書きの表示
+function showMobileNotice(): void {
+    if (mobileNoticeEl && isMobileDevice()) {
+        mobileNoticeEl.classList.remove('hidden');
+        console.log('スマートフォンを検出しました。注意書きを表示します。');
+    }
+}
+
 // ページロード時に初期化
 initialize();
+showMobileNotice();

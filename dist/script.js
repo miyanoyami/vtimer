@@ -1,3 +1,39 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 // DOM要素の取得と型アサーション
 var minutesEl = document.getElementById('minutes');
 var secondsEl = document.getElementById('seconds');
@@ -10,6 +46,7 @@ var progressCircleEl = document.getElementById('progress-circle');
 var phaseIndicatorEl = document.getElementById('phase-indicator');
 var playIconEl = document.getElementById('play-icon');
 var pauseIconEl = document.getElementById('pause-icon');
+var mobileNoticeEl = document.getElementById('mobile-notice');
 // デバッグモード設定（true: 5秒単位、false: 本番時間）
 var DEBUG_MODE = false;
 // VTuber IDをHTMLから取得
@@ -66,7 +103,7 @@ var sequence = [
     { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break3.mp3' },
     // 1st Cycle - Set 4
     { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume3.mp3' },
-    { type: '長休憩', duration: getTime(LONG_BREAK, DEBUG_LONG_BREAK), voice: 'long_break1.mp3' },
+    { type: '長休憩', duration: getTime(LONG_BREAK, DEBUG_LONG_BREAK), voice: 'long_break.mp3' },
     // 2nd Cycle - Set 1
     { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume1.mp3' },
     { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break1.mp3' },
@@ -77,7 +114,7 @@ var sequence = [
     { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume3.mp3' },
     { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'break3.mp3' },
     // 2nd Cycle - Set 4
-    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume3.mp3' },
+    { type: '集中', duration: getTime(WORK_TIME, DEBUG_WORK_TIME), voice: 'resume4.mp3' },
     { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG_SHORT_BREAK), voice: 'complete.mp3' },
 ];
 // 状態管理変数に型を付与
@@ -90,6 +127,65 @@ var totalWorkTimeInSeconds = 0; // 総作業時間（集中時間のみカウン
 var phaseStartTime = 0; // フェーズ開始時刻（実時間）
 var pausedRemaining = 0; // 一時停止時の残り時間
 var currentPhaseWorkTime = 0; // 現在のフェーズで経過した作業時間
+// Wake Lock 関連の変数
+var wakeLock = null;
+// Wake Lock を取得する関数
+function requestWakeLock() {
+    return __awaiter(this, void 0, void 0, function () {
+        var err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 4, , 5]);
+                    if (!('wakeLock' in navigator)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, navigator.wakeLock.request('screen')];
+                case 1:
+                    wakeLock = _a.sent();
+                    console.log('Wake Lock が有効になりました');
+                    // Wake Lock が解放された場合のイベントリスナー
+                    wakeLock.addEventListener('release', function () {
+                        console.log('Wake Lock が解放されました');
+                    });
+                    return [3 /*break*/, 3];
+                case 2:
+                    console.warn('このブラウザは Wake Lock API をサポートしていません');
+                    _a.label = 3;
+                case 3: return [3 /*break*/, 5];
+                case 4:
+                    err_1 = _a.sent();
+                    console.error('Wake Lock の取得に失敗:', err_1);
+                    return [3 /*break*/, 5];
+                case 5: return [2 /*return*/];
+            }
+        });
+    });
+}
+// Wake Lock を解放する関数
+function releaseWakeLock() {
+    return __awaiter(this, void 0, void 0, function () {
+        var err_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!(wakeLock !== null)) return [3 /*break*/, 4];
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, wakeLock.release()];
+                case 2:
+                    _a.sent();
+                    wakeLock = null;
+                    console.log('Wake Lock を解放しました');
+                    return [3 /*break*/, 4];
+                case 3:
+                    err_2 = _a.sent();
+                    console.error('Wake Lock の解放に失敗:', err_2);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
 // LocalStorage キー
 var STORAGE_KEYS = {
     IS_RUNNING: 'timer_isRunning',
@@ -140,7 +236,7 @@ var audioSettings = {
 function playVoice(filename) {
     if (!vtuberId)
         return; // IDがなければ何もしない
-    var audioPath = "../voices/".concat(vtuberId, "/").concat(filename);
+    var audioPath = "".concat(filename);
     var audio = new Audio(audioPath);
     // ファイル別の音量微調整
     var volumeAdjustments = {
@@ -255,11 +351,15 @@ function updateAnimations(phaseType) {
 function nextSequence() {
     sequenceIndex++;
     if (sequenceIndex >= sequence.length) {
-        if (timerId)
-            clearInterval(timerId);
+        if (timerId) {
+            clearTimeout(timerId);
+            timerId = null;
+        }
         isRunning = false;
         clearState(); // 完了時は状態をクリア
         updateButtonIcon();
+        // タイマー完了時に Wake Lock を解放
+        releaseWakeLock();
         return;
     }
     var nextPhase = sequence[sequenceIndex];
@@ -269,6 +369,10 @@ function nextSequence() {
     playVoice(nextPhase.voice);
     updateDisplay();
     saveState();
+    // 次のカウントダウンをスケジュール
+    if (isRunning) {
+        timerId = window.setTimeout(countdown, 100);
+    }
 }
 // カウントダウン関数（Date.nowベースの正確な時間管理）
 function countdown() {
@@ -285,12 +389,14 @@ function countdown() {
         }
         updateDisplay();
         saveState(); // 状態を保存
+        // setTimeout で次の更新をスケジュール（より正確）
+        timerId = window.setTimeout(countdown, 100);
     }
     else {
         timeInSeconds = 0;
-        // フェーズ完了時に作業時間を加算
+        // フェーズ完了時に作業時間を加算（経過時間を加算）
         if (sequence[sequenceIndex].type === '集中') {
-            totalWorkTimeInSeconds += totalTimeInSeconds;
+            totalWorkTimeInSeconds += elapsed; // 修正: totalTimeInSecondsではなくelapsed
             currentPhaseWorkTime = 0;
         }
         updateDisplay();
@@ -322,21 +428,29 @@ startPauseBtn.addEventListener('click', function () {
             var elapsed = totalTimeInSeconds - timeInSeconds;
             phaseStartTime = Date.now() - (elapsed * 1000);
         }
-        timerId = window.setInterval(countdown, 100); // 100msごとに更新
+        countdown(); // setTimeoutを使うので直接呼び出し
         saveState();
+        // Wake Lock を取得
+        requestWakeLock();
     }
     else {
-        if (timerId)
-            clearInterval(timerId);
+        if (timerId) {
+            clearTimeout(timerId); // setTimeoutに変更
+            timerId = null;
+        }
         pausedRemaining = timeInSeconds;
         saveState();
+        // Wake Lock を解放
+        releaseWakeLock();
     }
     updateButtonIcon();
 });
 // リセットボタンの処理
 resetBtn.addEventListener('click', function () {
-    if (timerId)
-        clearInterval(timerId);
+    if (timerId) {
+        clearTimeout(timerId);
+        timerId = null;
+    }
     isRunning = false;
     sequenceIndex = 0;
     timeInSeconds = sequence[0].duration;
@@ -352,33 +466,77 @@ resetBtn.addEventListener('click', function () {
     }
     updateButtonIcon();
     updateDisplay();
+    // Wake Lock を解放
+    releaseWakeLock();
 });
 // 初期化処理
 function initialize() {
     // LocalStorageから状態を復元
     var restored = loadState();
-    if (restored && isRunning) {
-        // 実行中だった場合、現在時刻から残り時間を再計算
-        var now = Date.now();
-        var elapsed = Math.floor((now - phaseStartTime) / 1000);
-        var remaining = totalTimeInSeconds - elapsed;
-        if (remaining > 0) {
-            timeInSeconds = remaining;
-            // タイマーを再開
-            timerId = window.setInterval(countdown, 100);
+    if (restored) {
+        // ページ遷移から戻ってきた場合
+        // 実行中だった場合でも一時停止状態にする
+        if (isRunning) {
+            var now = Date.now();
+            var elapsed = Math.floor((now - phaseStartTime) / 1000);
+            var remaining = totalTimeInSeconds - elapsed;
+            if (remaining > 0) {
+                timeInSeconds = remaining;
+                pausedRemaining = remaining;
+            }
+            else {
+                // 時間切れの場合は0にリセット
+                timeInSeconds = 0;
+                pausedRemaining = 0;
+            }
+            // 一時停止状態にする
+            isRunning = false;
+            saveState();
         }
         else {
-            // 時間切れの場合は次のフェーズへ
-            timeInSeconds = 0;
-            nextSequence();
+            // 元々一時停止中だった場合
+            timeInSeconds = pausedRemaining;
         }
-    }
-    else if (restored && !isRunning) {
-        // 一時停止中だった場合
-        timeInSeconds = pausedRemaining;
     }
     updateDisplay();
     updateButtonIcon();
 }
+// ページアンロード時の処理（リロード、閉じる、遷移時）
+window.addEventListener('beforeunload', function () {
+    if (isRunning) {
+        // 実行中の場合、現在の残り時間を計算して一時停止状態で保存
+        var now = Date.now();
+        var elapsed = Math.floor((now - phaseStartTime) / 1000);
+        var remaining = totalTimeInSeconds - elapsed;
+        if (remaining > 0) {
+            pausedRemaining = remaining;
+        }
+        else {
+            pausedRemaining = 0;
+        }
+        isRunning = false;
+        saveState();
+    }
+    // Wake Lock を解放
+    releaseWakeLock();
+});
+// スマートフォン検出関数
+function isMobileDevice() {
+    // ユーザーエージェントによる判定
+    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    var mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+    // タッチデバイスかつ画面幅が狭い場合もモバイルと判定
+    var isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    var isNarrowScreen = window.innerWidth <= 768;
+    return mobileRegex.test(userAgent) || (isTouchDevice && isNarrowScreen);
+}
+// モバイル注意書きの表示
+function showMobileNotice() {
+    if (mobileNoticeEl && isMobileDevice()) {
+        mobileNoticeEl.classList.remove('hidden');
+        console.log('スマートフォンを検出しました。注意書きを表示します。');
+    }
+}
 // ページロード時に初期化
 initialize();
+showMobileNotice();
