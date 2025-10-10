@@ -249,13 +249,43 @@ const audioSettings = {
     fadeInDuration: 200, // フェードイン時間 (ms)
 };
 
+// 音声再利用のための Audio オブジェクト
+let audioPlayer: HTMLAudioElement | null = null;
+let audioUnlocked = false;
+
+// 音声コンテキストのアンロック（スマートフォン対応）
+function unlockAudio(): void {
+    if (audioUnlocked) return;
+
+    if (!audioPlayer) {
+        audioPlayer = new Audio();
+    }
+
+    // 無音を再生してアンロック
+    const silentPromise = audioPlayer.play();
+    if (silentPromise !== undefined) {
+        silentPromise.then(() => {
+            audioPlayer!.pause();
+            audioPlayer!.currentTime = 0;
+            audioUnlocked = true;
+            console.log('音声コンテキストをアンロックしました');
+        }).catch(() => {
+            console.warn('音声アンロックに失敗しました');
+        });
+    }
+}
+
 // 音声再生関数（音量調整機能付き）
 function playVoice(filename: string): void {
     if (!vtuberId) return; // IDがなければ何もしない
 
     const audioPath = `${filename}`;
-    const audio = new Audio(audioPath);
-    
+
+    // Audio オブジェクトを再利用
+    if (!audioPlayer) {
+        audioPlayer = new Audio();
+    }
+
     // ファイル別の音量微調整
     const volumeAdjustments: Record<string, number> = {
         'start.mp3': 1.0,
@@ -269,17 +299,23 @@ function playVoice(filename: string): void {
         'resume2.mp3': 1.0,
         'resume3.mp3': 1.0,
     };
-    
+
     // ファイル固有の音量調整を適用（最大1.0に制限）
     const adjustment = volumeAdjustments[filename] || 1.0;
-    audio.volume = Math.min(1.0, audioSettings.volume * adjustment * audioSettings.globalBoost);
-    
-    // 再生開始
-    audio.play().catch(error => {
-        console.error("音声の再生に失敗:", error, "Path:", audioPath);
-    });
-    
-    console.log(`音声再生: ${filename} (音量: ${(audio.volume * 100).toFixed(0)}%)`);
+    audioPlayer.volume = Math.min(1.0, audioSettings.volume * adjustment * audioSettings.globalBoost);
+
+    // 音源を設定して再生
+    audioPlayer.src = audioPath;
+    audioPlayer.load();
+
+    const playPromise = audioPlayer.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
+            console.error("音声の再生に失敗:", error, "Path:", audioPath);
+        });
+    }
+
+    console.log(`音声再生: ${filename} (音量: ${(audioPlayer.volume * 100).toFixed(0)}%)`);
 }
 
 
@@ -459,6 +495,9 @@ function updateButtonIcon(): void {
 
 // 開始・一時停止ボタンの処理
 startPauseBtn.addEventListener('click', (): void => {
+    // スマートフォン対応: 最初のクリックで音声をアンロック
+    unlockAudio();
+
     isRunning = !isRunning;
     if (isRunning) {
         // 最初の再生

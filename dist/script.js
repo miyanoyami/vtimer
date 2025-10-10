@@ -274,12 +274,38 @@ var audioSettings = {
     globalBoost: 1.0, // グローバル音量ブースト（1.0が最大、それ以上は効果なし）
     fadeInDuration: 200, // フェードイン時間 (ms)
 };
+// 音声再利用のための Audio オブジェクト
+var audioPlayer = null;
+var audioUnlocked = false;
+// 音声コンテキストのアンロック（スマートフォン対応）
+function unlockAudio() {
+    if (audioUnlocked)
+        return;
+    if (!audioPlayer) {
+        audioPlayer = new Audio();
+    }
+    // 無音を再生してアンロック
+    var silentPromise = audioPlayer.play();
+    if (silentPromise !== undefined) {
+        silentPromise.then(function () {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            audioUnlocked = true;
+            console.log('音声コンテキストをアンロックしました');
+        }).catch(function () {
+            console.warn('音声アンロックに失敗しました');
+        });
+    }
+}
 // 音声再生関数（音量調整機能付き）
 function playVoice(filename) {
     if (!vtuberId)
         return; // IDがなければ何もしない
     var audioPath = "".concat(filename);
-    var audio = new Audio(audioPath);
+    // Audio オブジェクトを再利用
+    if (!audioPlayer) {
+        audioPlayer = new Audio();
+    }
     // ファイル別の音量微調整
     var volumeAdjustments = {
         'start.mp3': 1.0,
@@ -295,12 +321,17 @@ function playVoice(filename) {
     };
     // ファイル固有の音量調整を適用（最大1.0に制限）
     var adjustment = volumeAdjustments[filename] || 1.0;
-    audio.volume = Math.min(1.0, audioSettings.volume * adjustment * audioSettings.globalBoost);
-    // 再生開始
-    audio.play().catch(function (error) {
-        console.error("音声の再生に失敗:", error, "Path:", audioPath);
-    });
-    console.log("\u97F3\u58F0\u518D\u751F: ".concat(filename, " (\u97F3\u91CF: ").concat((audio.volume * 100).toFixed(0), "%)"));
+    audioPlayer.volume = Math.min(1.0, audioSettings.volume * adjustment * audioSettings.globalBoost);
+    // 音源を設定して再生
+    audioPlayer.src = audioPath;
+    audioPlayer.load();
+    var playPromise = audioPlayer.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(function (error) {
+            console.error("音声の再生に失敗:", error, "Path:", audioPath);
+        });
+    }
+    console.log("\u97F3\u58F0\u518D\u751F: ".concat(filename, " (\u97F3\u91CF: ").concat((audioPlayer.volume * 100).toFixed(0), "%)"));
 }
 // 音量設定変更関数（将来的な拡張用）
 function setGlobalVolume(volume) {
@@ -458,6 +489,8 @@ function updateButtonIcon() {
 }
 // 開始・一時停止ボタンの処理
 startPauseBtn.addEventListener('click', function () {
+    // スマートフォン対応: 最初のクリックで音声をアンロック
+    unlockAudio();
     isRunning = !isRunning;
     if (isRunning) {
         // 最初の再生
