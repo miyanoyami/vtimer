@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>おしえーる - 庭和みずく</title>
+    <title>おしえーる - 山吹オルカ</title>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-D5G5EXH18M"></script>
@@ -14,11 +14,11 @@
       gtag('config', 'G-D5G5EXH18M');
     </script>
 
-    <link rel="stylesheet" href="../../assets/tailwind.css?v=1760127775">
-    <link rel="stylesheet" href="../../assets/themes.css?v=1760128210">
-    <link rel="stylesheet" href="../../assets/style.css?v=1760128210">
+    <link rel="stylesheet" href="../../assets/tailwind.css?v=1760174345">
+    <link rel="stylesheet" href="../../assets/themes.css?v=1760174345">
+    <link rel="stylesheet" href="../../assets/style.css?v=1760174345">
 </head>
-<body data-vtuber-id="niwawamizuku" class="min-h-screen flex items-center justify-center p-4">
+<body data-vtuber-id="yamabukiorca" class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-lg">
         <!-- ヘッダー -->
         <div class="text-center mb-6">
@@ -32,7 +32,7 @@
             </div>
             <h1 class="text-2xl md:text-3xl font-bold mb-2">
                 <span class="text-gradient-primary">
-                    庭和みずく
+                    山吹オルカ
                 </span>
             </h1>
         </div>
@@ -50,7 +50,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- タイマー表示 -->
             <div class="text-center mb-6">
                 <div class="relative">
@@ -60,7 +60,7 @@
                             <!-- 背景円 -->
                             <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
                             <!-- プログレス円 -->
-                            <circle id="progress-circle" cx="50" cy="50" r="45" fill="none" 
+                            <circle id="progress-circle" cx="50" cy="50" r="45" fill="none"
                                     stroke="url(#gradient)" stroke-width="3" stroke-linecap="round"
                                     stroke-dasharray="283" stroke-dashoffset="283"
                                     class="transition-all duration-1000 ease-in-out progress-circle"/>
@@ -72,15 +72,15 @@
                                 </linearGradient>
                             </defs>
                         </svg>
-                        
+
                         <!-- 中央のタイマー表示 -->
                         <div class="absolute inset-0 flex items-center justify-center">
                             <div class="text-center">
                                 <div class="text-3xl sm:text-4xl md:text-5xl font-mono font-bold text-theme-primary mb-1">
-                                    <span id="minutes">00</span><span class="text-theme-accent">:</span><span id="seconds">10</span>
+                                    <span id="minutes">25</span><span class="text-theme-accent">:</span><span id="seconds">00</span>
                                 </div>
                                 <div class="text-theme-secondary text-xs uppercase tracking-wider font-semibold" id="phase-indicator">
-                                    作業中
+                                    集中タイム
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                         <div>
                             <p class="text-yellow-500 text-xs font-semibold mb-1">スマートフォンでご利用の方へ</p>
                             <p class="text-theme-secondary text-xs leading-relaxed">
-                                スマホの仕様上このページを開いていないとタイマーが停止しる場合があります。動作中は画面がロックされないので、バッテリー節約のため画面輝度を下げることをおすすめします。
+                                スマホの仕様上、このページを開いていないとタイマーが停止します。タイマー動作中は画面がロックされないので、画面輝度を下げることをおすすめします。
                             </p>
                         </div>
                     </div>
@@ -141,9 +141,12 @@
 
         <!-- フッター -->
         <div class="text-center mt-6">
+            <p class="text-theme-secondary/70 text-xs">
+
+            </p>
         </div>
     </div>
 
-    <script src="../../dist/script.js?v=1760128210"></script>
+    <script src="../../dist/script.js?v=1760174345"></script>
 </body>
 </html>

@@ -75,6 +75,7 @@ var vtuberThemes = {
     'niwawamizuku': 'ocean', // Sakura Pink
     'suwaponta': 'wood',
     'naokurotama': 'black',
+    'yamabukiorca': 'sunset',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

@@ -49,6 +49,7 @@ const vtuberThemes: Record<string, string> = {
     'niwawamizuku': 'ocean',         // Sakura Pink
     'suwaponta': 'wood',
     'naokurotama': 'black',
+    'yamabukiorca': 'sunset',
 };
 
 // テーマ適用関数

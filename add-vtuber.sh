@@ -93,7 +93,7 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
         <!-- ヘッダー -->
         <div class="text-center mb-6">
             <div class="mb-3">
-                <a href="../../index.html" class="inline-flex items-center text-theme-secondary/40 hover:text-theme-secondary/70 text-xs transition-colors duration-200">
+                <a href="../../index.html" class="inline-flex items-center text-theme-secondary/70 hover:text-theme-secondary text-xs transition-colors duration-200">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
