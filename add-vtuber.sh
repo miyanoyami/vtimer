@@ -160,7 +160,7 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
 
 
             <!-- コントロールボタン -->
-            <div class="flex flex-col sm:flex-row gap-4 justify:center items-center">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button id="start-pause-btn"
                         class="group relative w-16 h-16 gradient-primary hover:scale-110 btn-primary
                                text-white font-bold text-lg rounded-full shadow-lg transform transition-all duration-200
@@ -250,16 +250,14 @@ fi
 echo ""
 echo "画像ファイルを検出しています..."
 
+# 実際のファイル名を取得（大文字小文字を正確に）
 IMAGE_FILE=""
-for ext in jpg jpeg JPG JPEG png PNG; do
-    if [ -f "timers/${SLUG}/${SLUG}.${ext}" ]; then
-        IMAGE_FILE="${SLUG}.${ext}"
-        echo "✓ 画像ファイルを検出しました: ${IMAGE_FILE}"
-        break
-    fi
-done
+IMAGE_PATH=$(find "timers/${SLUG}" -maxdepth 1 -type f -iname "${SLUG}.*" | grep -iE '\.(jpg|jpeg|png)$' | head -n 1)
 
-if [ -z "$IMAGE_FILE" ]; then
+if [ -n "$IMAGE_PATH" ]; then
+    IMAGE_FILE=$(basename "$IMAGE_PATH")
+    echo "✓ 画像ファイルを検出しました: ${IMAGE_FILE}"
+else
     echo "  警告: timers/${SLUG}/ 内に画像ファイルが見つかりません"
     echo "  対応形式: .jpg, .jpeg, .JPG, .JPEG, .png, .PNG"
     echo "  デフォルトのプレースホルダーを使用します"
