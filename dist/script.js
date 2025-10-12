@@ -84,6 +84,7 @@ var vtuberThemes = {
     'kaijyukun': 'ocean',
     'miyanoyami': 'white',
     'exceliruka': 'ocean',
+    'raymugi': 'sunset',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

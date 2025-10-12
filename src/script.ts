@@ -58,6 +58,7 @@ const vtuberThemes: Record<string, string> = {
     'kaijyukun': 'ocean',
     'miyanoyami': 'white',
     'exceliruka': 'ocean',
+    'raymugi': 'sunset',
 };
 
 // テーマ適用関数
