@@ -14,7 +14,7 @@ const mobileNoticeEl = document.getElementById('mobile-notice') as HTMLElement;
 
 // シーケンスの型を定義
 interface SequencePhase {
-    type: '集中' | '休憩' | '長休憩';
+    type: '集中' | '休憩' | '長休憩' | '終了';
     duration: number; // 秒単位
     voice: string;
 }
@@ -50,6 +50,13 @@ const vtuberThemes: Record<string, string> = {
     'suwaponta': 'wood',
     'naokurotama': 'black',
     'yamabukiorca': 'sunset',
+    'yagiruchiru': 'ocean',
+    'takanose_rin': 'violet',
+    'mutunotatami': 'sakura',
+    'nekoyan': 'sakura',
+    'perkigyampark': 'violet',
+    'kaijyukun': 'ocean',
+    'miyanoyami': 'white',
 };
 
 // テーマ適用関数
@@ -76,14 +83,14 @@ const SHORT_BREAK = 5 * 60;      // 5分
 const LONG_BREAK = 15 * 60;      // 15分
 
 // デバッグ用時間（レベル1: 高速）
-const DEBUG1_WORK_TIME = 15;      // 15秒
-const DEBUG1_SHORT_BREAK = 5;     // 5秒
+const DEBUG1_WORK_TIME = 12;      // 15秒
+const DEBUG1_SHORT_BREAK = 6;     // 5秒
 const DEBUG1_LONG_BREAK = 10;     // 10秒
 
 // デバッグ用時間（レベル2: 1分単位）
-const DEBUG2_WORK_TIME = 60;      // 1分
+const DEBUG2_WORK_TIME = 30;      // 1分
 const DEBUG2_SHORT_BREAK = 15;    // 15秒
-const DEBUG2_LONG_BREAK = 30;     // 30秒
+const DEBUG2_LONG_BREAK = 20;     // 30秒
 
 // デバッグレベルに応じた時間を返す関数
 function getTime(prodTime: number, debug1Time: number, debug2Time: number): number {
@@ -124,7 +131,7 @@ const sequence: SequencePhase[] = [
 
     // 2nd Cycle - Set 4
     { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume4.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'complete.mp3' },
+    { type: '終了', duration: 0, voice: 'complete.mp3' },
 ];
 
 // 状態管理変数に型を付与
@@ -361,7 +368,10 @@ function updateDisplay(): void {
 
 
         // サイクル/セット数の表示ロジックを修正
-        if (sequenceIndex <= 7) { // 1st Cycle
+        if (currentPhase.type === '終了') {
+            // 終了フェーズは最終セット・サイクルを表示
+            cycleTextEl.textContent = `セット: 4/4 | サイクル: 2/2`;
+        } else if (sequenceIndex <= 7) { // 1st Cycle
             const set = Math.floor(sequenceIndex / 2) + 1;
             cycleTextEl.textContent = `セット: ${set}/4 | サイクル: 1/2`;
         } else if (sequenceIndex > 7) { // 2nd Cycle (長休憩後)
@@ -403,7 +413,7 @@ function updateProgressCircle(): void {
 }
 
 // アニメーション管理関数
-function updateAnimations(phaseType: '集中' | '休憩' | '長休憩'): void {
+function updateAnimations(phaseType: '集中' | '休憩' | '長休憩' | '終了'): void {
     const timerContainer = document.querySelector('.bg-white\\/10');
     if (!timerContainer) return;
     
@@ -446,6 +456,19 @@ function nextSequence(): void {
     playVoice(nextPhase.voice);
     updateDisplay();
     saveState();
+
+    // 終了フェーズの場合はカウントダウンせずに完了処理
+    if (nextPhase.type === '終了') {
+        if (timerId) {
+            clearTimeout(timerId);
+            timerId = null;
+        }
+        isRunning = false;
+        clearState();
+        updateButtonIcon();
+        releaseWakeLock();
+        return;
+    }
 
     // 次のカウントダウンをスケジュール
     if (isRunning) {
@@ -503,6 +526,19 @@ function updateButtonIcon(): void {
 startPauseBtn.addEventListener('click', (): void => {
     // スマートフォン対応: 最初のクリックで音声をアンロック
     unlockAudio();
+
+    // 完了後または終了フェーズの場合はリセット
+    if (sequenceIndex >= sequence.length || (sequenceIndex < sequence.length && sequence[sequenceIndex].type === '終了')) {
+        sequenceIndex = 0;
+        timeInSeconds = sequence[0].duration;
+        totalTimeInSeconds = sequence[0].duration;
+        totalWorkTimeInSeconds = 0;
+        currentPhaseWorkTime = 0;
+        phaseStartTime = 0;
+        pausedRemaining = 0;
+        clearState();
+        updateDisplay();
+    }
 
     isRunning = !isRunning;
     if (isRunning) {

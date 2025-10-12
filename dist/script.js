@@ -76,6 +76,13 @@ var vtuberThemes = {
     'suwaponta': 'wood',
     'naokurotama': 'black',
     'yamabukiorca': 'sunset',
+    'yagiruchiru': 'ocean',
+    'takanose_rin': 'violet',
+    'mutunotatami': 'sakura',
+    'nekoyan': 'sakura',
+    'perkigyampark': 'violet',
+    'kaijyukun': 'ocean',
+    'miyanoyami': 'white',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
@@ -97,13 +104,13 @@ var WORK_TIME = 25 * 60; // 25分
 var SHORT_BREAK = 5 * 60; // 5分
 var LONG_BREAK = 15 * 60; // 15分
 // デバッグ用時間（レベル1: 高速）
-var DEBUG1_WORK_TIME = 15; // 15秒
-var DEBUG1_SHORT_BREAK = 5; // 5秒
+var DEBUG1_WORK_TIME = 12; // 15秒
+var DEBUG1_SHORT_BREAK = 6; // 5秒
 var DEBUG1_LONG_BREAK = 10; // 10秒
 // デバッグ用時間（レベル2: 1分単位）
-var DEBUG2_WORK_TIME = 60; // 1分
+var DEBUG2_WORK_TIME = 30; // 1分
 var DEBUG2_SHORT_BREAK = 15; // 15秒
-var DEBUG2_LONG_BREAK = 30; // 30秒
+var DEBUG2_LONG_BREAK = 20; // 30秒
 // デバッグレベルに応じた時間を返す関数
 function getTime(prodTime, debug1Time, debug2Time) {
     if (DEBUG_LEVEL === 1)
@@ -137,7 +144,7 @@ var sequence = [
     { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'break3.mp3' },
     // 2nd Cycle - Set 4
     { type: '集中', duration: getTime(WORK_TIME, DEBUG1_WORK_TIME, DEBUG2_WORK_TIME), voice: 'resume4.mp3' },
-    { type: '休憩', duration: getTime(SHORT_BREAK, DEBUG1_SHORT_BREAK, DEBUG2_SHORT_BREAK), voice: 'complete.mp3' },
+    { type: '終了', duration: 0, voice: 'complete.mp3' },
 ];
 // 状態管理変数に型を付与
 var timerId = null;
@@ -367,7 +374,11 @@ function updateDisplay() {
         // アニメーション効果の適用
         updateAnimations(currentPhase.type);
         // サイクル/セット数の表示ロジックを修正
-        if (sequenceIndex <= 7) { // 1st Cycle
+        if (currentPhase.type === '終了') {
+            // 終了フェーズは最終セット・サイクルを表示
+            cycleTextEl.textContent = "\u30BB\u30C3\u30C8: 4/4 | \u30B5\u30A4\u30AF\u30EB: 2/2";
+        }
+        else if (sequenceIndex <= 7) { // 1st Cycle
             var set = Math.floor(sequenceIndex / 2) + 1;
             cycleTextEl.textContent = "\u30BB\u30C3\u30C8: ".concat(set, "/4 | \u30B5\u30A4\u30AF\u30EB: 1/2");
         }
@@ -447,6 +458,18 @@ function nextSequence() {
     playVoice(nextPhase.voice);
     updateDisplay();
     saveState();
+    // 終了フェーズの場合はカウントダウンせずに完了処理
+    if (nextPhase.type === '終了') {
+        if (timerId) {
+            clearTimeout(timerId);
+            timerId = null;
+        }
+        isRunning = false;
+        clearState();
+        updateButtonIcon();
+        releaseWakeLock();
+        return;
+    }
     // 次のカウントダウンをスケジュール
     if (isRunning) {
         timerId = window.setTimeout(countdown, 100);
@@ -496,6 +519,18 @@ function updateButtonIcon() {
 startPauseBtn.addEventListener('click', function () {
     // スマートフォン対応: 最初のクリックで音声をアンロック
     unlockAudio();
+    // 完了後または終了フェーズの場合はリセット
+    if (sequenceIndex >= sequence.length || (sequenceIndex < sequence.length && sequence[sequenceIndex].type === '終了')) {
+        sequenceIndex = 0;
+        timeInSeconds = sequence[0].duration;
+        totalTimeInSeconds = sequence[0].duration;
+        totalWorkTimeInSeconds = 0;
+        currentPhaseWorkTime = 0;
+        phaseStartTime = 0;
+        pausedRemaining = 0;
+        clearState();
+        updateDisplay();
+    }
     isRunning = !isRunning;
     if (isRunning) {
         // 最初の再生
