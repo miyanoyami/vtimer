@@ -57,6 +57,7 @@ const vtuberThemes: Record<string, string> = {
     'perkigyampark': 'violet',
     'kaijyukun': 'ocean',
     'miyanoyami': 'white',
+    'exceliruka': 'ocean',
 };
 
 // テーマ適用関数

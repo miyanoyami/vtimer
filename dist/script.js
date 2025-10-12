@@ -83,6 +83,7 @@ var vtuberThemes = {
     'perkigyampark': 'violet',
     'kaijyukun': 'ocean',
     'miyanoyami': 'white',
+    'exceliruka': 'ocean',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
