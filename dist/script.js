@@ -86,6 +86,7 @@ var vtuberThemes = {
     'exceliruka': 'ocean',
     'raymugi': 'sunset',
     'hoshiniichi': 'black',
+    'inuhoshihitsuji': 'white',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

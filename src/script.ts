@@ -60,6 +60,7 @@ const vtuberThemes: Record<string, string> = {
     'exceliruka': 'ocean',
     'raymugi': 'sunset',
     'hoshiniichi': 'black',
+    'inuhoshihitsuji': 'white',
 };
 
 // テーマ適用関数
