@@ -61,6 +61,7 @@ const vtuberThemes: Record<string, string> = {
     'raymugi': 'sunset',
     'hoshiniichi': 'black',
     'inuhoshihitsuji': 'white',
+    'yoinotowahoshi': 'white',
 };
 
 // テーマ適用関数

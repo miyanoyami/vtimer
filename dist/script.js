@@ -87,6 +87,7 @@ var vtuberThemes = {
     'raymugi': 'sunset',
     'hoshiniichi': 'black',
     'inuhoshihitsuji': 'white',
+    'yoinotowahoshi': 'white',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
