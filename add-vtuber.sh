@@ -12,7 +12,7 @@ usage() {
     echo "引数:"
     echo "  英名     : ページのパス名（例: yaoaoi）"
     echo "  表示名   : タイトルやリンクに表示する名前（例: 八百アオヰ）"
-    echo "  テーマ   : テーマカラー（sakura/ocean/forest/sunset/violet/white/black/wood）"
+    echo "  テーマ   : テーマカラー（sakura/ocean/forest/sunset/violet/white/black/wood/ruby）"
     echo ""
     echo "例:"
     echo "  $0 example 例太郎 ocean"
@@ -36,10 +36,10 @@ NAME=$2
 THEME=$3
 
 # テーマの妥当性チェック
-VALID_THEMES=("sakura" "ocean" "forest" "sunset" "violet" "white" "black" "wood")
+VALID_THEMES=("sakura" "ocean" "forest" "sunset" "violet" "white" "black" "wood" "ruby")
 if [[ ! " ${VALID_THEMES[@]} " =~ " ${THEME} " ]]; then
     echo "エラー: 無効なテーマです。以下から選択してください:"
-    echo "  sakura, ocean, forest, sunset, violet, white, black, wood"
+    echo "  sakura, ocean, forest, sunset, violet, white, black, wood, ruby"
     exit 1
 fi
 

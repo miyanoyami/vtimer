@@ -88,6 +88,7 @@ var vtuberThemes = {
     'hoshiniichi': 'black',
     'inuhoshihitsuji': 'white',
     'yoinotowahoshi': 'white',
+    'kirisakitoca': 'ruby',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

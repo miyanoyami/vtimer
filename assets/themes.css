@@ -171,6 +171,25 @@
     --progress-glow: rgba(217, 119, 6, 0.4);
 }
 
+/* テーマ9: Ruby Red */
+[data-theme="ruby"] {
+    --bg-start: #fef2f2;
+    --bg-middle: #fecaca;
+    --bg-end: #fee2e2;
+    --primary-start: #dc2626;
+    --primary-end: #ef4444;
+    --secondary-start: #f87171;
+    --secondary-end: #fca5a5;
+    --accent-color: #b91c1c;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-accent: #991b1b;
+    --container-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(220, 38, 38, 0.3);
+    --shadow-color: rgba(220, 38, 38, 0.15);
+    --progress-glow: rgba(220, 38, 38, 0.4);
+}
+
 /* 背景グラデーションの適用 */
 body {
     background: linear-gradient(135deg, var(--bg-start), var(--bg-middle), var(--bg-end));
