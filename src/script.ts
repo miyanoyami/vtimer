@@ -63,6 +63,7 @@ const vtuberThemes: Record<string, string> = {
     'inuhoshihitsuji': 'white',
     'yoinotowahoshi': 'white',
     'kirisakitoca': 'ruby',
+    'orenonanase': 'sakura',
 };
 
 // テーマ適用関数
