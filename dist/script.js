@@ -90,6 +90,8 @@ var vtuberThemes = {
     'yoinotowahoshi': 'white',
     'kirisakitoca': 'ruby',
     'orenonanase': 'sakura',
+    'yumeriALP': 'violet',
+    'kirarinsentaikatamugiko': 'forest',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

@@ -64,6 +64,8 @@ const vtuberThemes: Record<string, string> = {
     'yoinotowahoshi': 'white',
     'kirisakitoca': 'ruby',
     'orenonanase': 'sakura',
+    'yumeriALP': 'violet',
+    'kirarinsentaikatamugiko': 'forest',
 };
 
 // テーマ適用関数
