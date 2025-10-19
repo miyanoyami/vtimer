@@ -92,6 +92,7 @@ var vtuberThemes = {
     'orenonanase': 'sakura',
     'yumeriALP': 'violet',
     'kirarinsentaikatamugiko': 'forest',
+    'momonokikanari': 'sakura',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

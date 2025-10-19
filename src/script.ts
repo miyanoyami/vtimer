@@ -66,6 +66,7 @@ const vtuberThemes: Record<string, string> = {
     'orenonanase': 'sakura',
     'yumeriALP': 'violet',
     'kirarinsentaikatamugiko': 'forest',
+    'momonokikanari': 'sakura',
 };
 
 // テーマ適用関数
