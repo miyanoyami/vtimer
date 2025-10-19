@@ -67,6 +67,7 @@ const vtuberThemes: Record<string, string> = {
     'yumeriALP': 'violet',
     'kirarinsentaikatamugiko': 'forest',
     'momonokikanari': 'sakura',
+    'shiromichan': 'white',
 };
 
 // テーマ適用関数

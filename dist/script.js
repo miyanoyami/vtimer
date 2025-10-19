@@ -93,6 +93,7 @@ var vtuberThemes = {
     'yumeriALP': 'violet',
     'kirarinsentaikatamugiko': 'forest',
     'momonokikanari': 'sakura',
+    'shiromichan': 'white',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
