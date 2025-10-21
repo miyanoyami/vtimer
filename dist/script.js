@@ -94,6 +94,8 @@ var vtuberThemes = {
     'kirarinsentaikatamugiko': 'forest',
     'momonokikanari': 'sakura',
     'shiromichan': 'white',
+    'shirafujiyui': 'ocean',
+    'aozorajion': 'violet',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

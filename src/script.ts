@@ -68,6 +68,8 @@ const vtuberThemes: Record<string, string> = {
     'kirarinsentaikatamugiko': 'forest',
     'momonokikanari': 'sakura',
     'shiromichan': 'white',
+    'shirafujiyui': 'ocean',
+    'aozorajion': 'violet',
 };
 
 // テーマ適用関数
