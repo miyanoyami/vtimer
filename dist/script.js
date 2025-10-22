@@ -96,6 +96,9 @@ var vtuberThemes = {
     'shiromichan': 'white',
     'shirafujiyui': 'ocean',
     'aozorajion': 'violet',
+    'nagazonotanocy': 'ocean',
+    'tsukimidaihuku': 'forest',
+    'nekomoriayana': 'violet',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
