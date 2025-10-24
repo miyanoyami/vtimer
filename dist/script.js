@@ -99,6 +99,7 @@ var vtuberThemes = {
     'nagazonotanocy': 'ocean',
     'tsukimidaihuku': 'forest',
     'nekomoriayana': 'violet',
+    'sayamaharuhi': 'sakura',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

@@ -73,6 +73,7 @@ const vtuberThemes: Record<string, string> = {
     'nagazonotanocy': 'ocean',
     'tsukimidaihuku': 'forest',
     'nekomoriayana': 'violet',
+    'sayamaharuhi': 'sakura',
 };
 
 // テーマ適用関数
