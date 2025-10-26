@@ -100,6 +100,8 @@ var vtuberThemes = {
     'tsukimidaihuku': 'forest',
     'nekomoriayana': 'violet',
     'sayamaharuhi': 'sakura',
+    'fujishirouka': 'violet',
+    'ponkotuleno': 'sakura',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
