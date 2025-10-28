@@ -102,6 +102,9 @@ var vtuberThemes = {
     'sayamaharuhi': 'sakura',
     'fujishirouka': 'violet',
     'ponkotuleno': 'sakura',
+    'mizumizuku': 'ocean',
+    'ainearatama': 'sakura',
+    'kasugashizuku': 'violet',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {

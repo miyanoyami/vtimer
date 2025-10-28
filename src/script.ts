@@ -76,6 +76,9 @@ const vtuberThemes: Record<string, string> = {
     'sayamaharuhi': 'sakura',
     'fujishirouka': 'violet',
     'ponkotuleno': 'sakura',
+    'mizumizuku': 'ocean',
+    'ainearatama': 'sakura',
+    'kasugashizuku': 'violet',
 };
 
 // テーマ適用関数
