@@ -79,6 +79,8 @@ const vtuberThemes: Record<string, string> = {
     'mizumizuku': 'ocean',
     'ainearatama': 'sakura',
     'kasugashizuku': 'violet',
+    'otoshibamikan': 'sunset',
+    'al': 'white',
 };
 
 // テーマ適用関数
