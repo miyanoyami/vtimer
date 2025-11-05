@@ -107,6 +107,9 @@ var vtuberThemes = {
     'kasugashizuku': 'violet',
     'otoshibamikan': 'sunset',
     'al': 'white',
+    'yao': 'sakura',
+    'sennintei': 'ocean',
+    'kokosakikitune': 'black',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
