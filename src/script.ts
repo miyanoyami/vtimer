@@ -84,6 +84,7 @@ const vtuberThemes: Record<string, string> = {
     'yao': 'sakura',
     'sennintei': 'ocean',
     'kokosakikitune': 'black',
+    'astropunk': 'black',
 };
 
 // テーマ適用関数

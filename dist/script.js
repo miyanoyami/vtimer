@@ -110,6 +110,7 @@ var vtuberThemes = {
     'yao': 'sakura',
     'sennintei': 'ocean',
     'kokosakikitune': 'black',
+    'astropunk': 'black',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
