@@ -111,6 +111,7 @@ var vtuberThemes = {
     'sennintei': 'ocean',
     'kokosakikitune': 'black',
     'astropunk': 'black',
+    'zonechan': 'violet',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
