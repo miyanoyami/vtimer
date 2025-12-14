@@ -112,6 +112,7 @@ var vtuberThemes = {
     'kokosakikitune': 'black',
     'astropunk': 'black',
     'zonechan': 'violet',
+    'kitaguchirei': 'wood',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
