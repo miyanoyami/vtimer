@@ -87,6 +87,7 @@ const vtuberThemes: Record<string, string> = {
     'astropunk': 'black',
     'zonechan': 'violet',
     'kitaguchirei': 'wood',
+    'shirayukihomare': 'white',
 };
 
 // テーマ適用関数

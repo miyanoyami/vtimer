@@ -113,6 +113,7 @@ var vtuberThemes = {
     'astropunk': 'black',
     'zonechan': 'violet',
     'kitaguchirei': 'wood',
+    'shirayukihomare': 'white',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
