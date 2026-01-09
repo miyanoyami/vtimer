@@ -39,6 +39,7 @@ var minutesEl = document.getElementById('minutes');
 var secondsEl = document.getElementById('seconds');
 var startPauseBtn = document.getElementById('start-pause-btn');
 var resetBtn = document.getElementById('reset-btn');
+var tweetBtn = document.getElementById('tweet-btn');
 var statusTextEl = document.getElementById('status-text');
 var cycleTextEl = document.getElementById('cycle-text');
 var totalTimeTextEl = document.getElementById('total-time-text');
@@ -114,6 +115,52 @@ var vtuberThemes = {
     'zonechan': 'violet',
     'kitaguchirei': 'wood',
     'shirayukihomare': 'white',
+};
+// VTuber IDと名前のマッピング
+var vtuberNames = {
+    'yaoaoi': '八百アオヰ',
+    'niwawamizuku': '庭和みずく',
+    'suwaponta': 'すわぽん太',
+    'naokurotama': '黒玉なお',
+    'yamabukiorca': '山吹オルカ',
+    'yagiruchiru': '夜樹ルチル',
+    'takanose_rin': '高ノ瀬凛',
+    'mutunotatami': '六乃たたみ',
+    'nekoyan': '寝子やん',
+    'perkigyampark': 'ペルキ・ギャンパーク',
+    'kaijyukun': 'かいじゅうくん',
+    'miyanoyami': '宮乃やみ',
+    'exceliruka': 'エクセルイルカ',
+    'raymugi': 'らいむぎ',
+    'hoshiniichi': '星仁いち',
+    'inuhoshihitsuji': '戌星ひつじ',
+    'yoinotowahoshi': '四祈とわ星',
+    'kirisakitoca': '桐崎桐花',
+    'orenonanase': 'おれのななせ',
+    'yumeriALP': '夢栞あるぷ',
+    'kirarinsentaikatamugiko': 'きらりん戦隊方麦粉',
+    'momonokikanari': '百軒カナリ',
+    'shiromichan': 'しろみちゃん',
+    'shirafujiyui': '白藤由比',
+    'aozorajion': '碧天路音',
+    'nagazonotanocy': '永園たのしぃ',
+    'tsukimidaihuku': '月見だいふく',
+    'nekomoriayana': '猫森彩奈',
+    'sayamaharuhi': '佐山ハルヒ',
+    'fujishirouka': '藤城うか',
+    'ponkotuleno': 'ぽんこつ@れの',
+    'mizumizuku': 'みずみずく',
+    'ainearatama': '愛音あらたま',
+    'kasugashizuku': '幽花しずく',
+    'otoshibamikan': '音柴蜜柑',
+    'al': 'アル',
+    'yao': 'やお',
+    'sennintei': '仙人亭',
+    'kokosakikitune': '九咲きつね',
+    'astropunk': 'あすとろぱんく',
+    'zonechan': 'ぞーんちゃん',
+    'kitaguchirei': '北口零',
+    'shirayukihomare': '白雪誉',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
@@ -731,6 +778,17 @@ phaseIndicatorEl.addEventListener('click', function () {
         clickCount = 0;
     }, 500);
 });
+// ポストボタンの処理
+if (tweetBtn) {
+    tweetBtn.addEventListener('click', function () {
+        var vtuberName = vtuberId ? (vtuberNames[vtuberId] || '') : '';
+        var postText = vtuberName
+            ? "".concat(vtuberName, "\u3068\u4E00\u7DD2\u306B\u4F5C\u696D\u3092\u59CB\u3081\u307E\u3059\uFF01 #\u304A\u3057\u3048\u30FC\u308B")
+            : '作業を始めます！ #おしえーる';
+        var postUrl = "https://x.com/intent/post?text=".concat(encodeURIComponent(postText), "&url=").concat(encodeURIComponent(window.location.href));
+        window.open(postUrl, '_blank', 'width=550,height=420');
+    });
+}
 // ページロード時に初期化
 initialize();
 showMobileNotice();

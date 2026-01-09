@@ -3,6 +3,7 @@ const minutesEl = document.getElementById('minutes') as HTMLSpanElement;
 const secondsEl = document.getElementById('seconds') as HTMLSpanElement;
 const startPauseBtn = document.getElementById('start-pause-btn') as HTMLButtonElement;
 const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
+const tweetBtn = document.getElementById('tweet-btn') as HTMLButtonElement;
 const statusTextEl = document.getElementById('status-text') as HTMLParagraphElement;
 const cycleTextEl = document.getElementById('cycle-text') as HTMLParagraphElement;
 const totalTimeTextEl = document.getElementById('total-time-text') as HTMLParagraphElement;
@@ -88,6 +89,53 @@ const vtuberThemes: Record<string, string> = {
     'zonechan': 'violet',
     'kitaguchirei': 'wood',
     'shirayukihomare': 'white',
+};
+
+// VTuber IDと名前のマッピング
+const vtuberNames: Record<string, string> = {
+    'yaoaoi': '八百アオヰ',
+    'niwawamizuku': '庭和みずく',
+    'suwaponta': 'すわぽん太',
+    'naokurotama': '黒玉なお',
+    'yamabukiorca': '山吹オルカ',
+    'yagiruchiru': '夜樹ルチル',
+    'takanose_rin': '高ノ瀬凛',
+    'mutunotatami': '六乃たたみ',
+    'nekoyan': '寝子やん',
+    'perkigyampark': 'ペルキ・ギャンパーク',
+    'kaijyukun': 'かいじゅうくん',
+    'miyanoyami': '宮乃やみ',
+    'exceliruka': 'エクセルイルカ',
+    'raymugi': 'らいむぎ',
+    'hoshiniichi': '星仁いち',
+    'inuhoshihitsuji': '戌星ひつじ',
+    'yoinotowahoshi': '四祈とわ星',
+    'kirisakitoca': '桐崎桐花',
+    'orenonanase': 'おれのななせ',
+    'yumeriALP': '夢栞あるぷ',
+    'kirarinsentaikatamugiko': 'きらりん戦隊方麦粉',
+    'momonokikanari': '百軒カナリ',
+    'shiromichan': 'しろみちゃん',
+    'shirafujiyui': '白藤由比',
+    'aozorajion': '碧天路音',
+    'nagazonotanocy': '永園たのしぃ',
+    'tsukimidaihuku': '月見だいふく',
+    'nekomoriayana': '猫森彩奈',
+    'sayamaharuhi': '佐山ハルヒ',
+    'fujishirouka': '藤城うか',
+    'ponkotuleno': 'ぽんこつ@れの',
+    'mizumizuku': 'みずみずく',
+    'ainearatama': '愛音あらたま',
+    'kasugashizuku': '幽花しずく',
+    'otoshibamikan': '音柴蜜柑',
+    'al': 'アル',
+    'yao': 'やお',
+    'sennintei': '仙人亭',
+    'kokosakikitune': '九咲きつね',
+    'astropunk': 'あすとろぱんく',
+    'zonechan': 'ぞーんちゃん',
+    'kitaguchirei': '北口零',
+    'shirayukihomare': '白雪誉',
 };
 
 // テーマ適用関数
@@ -758,6 +806,18 @@ phaseIndicatorEl.addEventListener('click', (): void => {
         clickCount = 0;
     }, 500);
 });
+
+// ポストボタンの処理
+if (tweetBtn) {
+    tweetBtn.addEventListener('click', (): void => {
+        const vtuberName = vtuberId ? (vtuberNames[vtuberId] || '') : '';
+        const postText = vtuberName
+            ? `${vtuberName}と一緒に作業を始めます！ #おしえーる`
+            : '作業を始めます！ #おしえーる';
+        const postUrl = `https://x.com/intent/post?text=${encodeURIComponent(postText)}&url=${encodeURIComponent(window.location.href)}`;
+        window.open(postUrl, '_blank', 'width=550,height=420');
+    });
+}
 
 // ページロード時に初期化
 initialize();

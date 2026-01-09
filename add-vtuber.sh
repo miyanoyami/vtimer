@@ -191,6 +191,20 @@ cat > "timers/${SLUG}/${SLUG}.html" << 'EOF'
                 </button>
             </div>
 
+            <!-- ポストボタン -->
+            <div class="mt-6 flex justify-center">
+                <button id="tweet-btn"
+                        class="inline-flex items-center gap-1.5 px-4 py-2
+                               text-theme-secondary/60 hover:text-theme-primary
+                               text-xs font-medium
+                               transition-colors duration-200">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <span>開始をポスト</span>
+                </button>
+            </div>
+
             <!-- スマートフォン向け注意書き -->
             <div id="mobile-notice" class="mt-6 hidden">
                 <div class="theme-container backdrop-blur-sm rounded-lg p-4 border border-yellow-500/30 bg-yellow-500/10">
@@ -230,20 +244,32 @@ sed -i '' "s/CACHE_VERSION/${CACHE_VERSION}/g" "timers/${SLUG}/${SLUG}.html"
 
 echo "✓ timers/${SLUG}/${SLUG}.html を作成しました"
 
-# src/script.ts にテーママッピングを追加
+# src/script.ts にテーママッピングと名前マッピングを追加
 echo ""
-echo "src/script.ts にテーママッピングを追加しています..."
+echo "src/script.ts にテーママッピングと名前マッピングを追加しています..."
 
 # vtuberThemes オブジェクトに追加
-if grep -q "'${SLUG}':" src/script.ts; then
-    echo "  注意: '${SLUG}' は既に src/script.ts に存在します。スキップします。"
+if grep -q "'${SLUG}':" src/script.ts | grep -A 1 "vtuberThemes"; then
+    echo "  注意: '${SLUG}' は既に vtuberThemes に存在します。スキップします。"
 else
     # 閉じ括弧の前に新しいエントリを追加
     sed -i '' "/^const vtuberThemes: Record<string, string> = {/,/^};/ {
         /^};/i\\
     '${SLUG}': '${THEME}',
     }" src/script.ts
-    echo "✓ src/script.ts に '${SLUG}': '${THEME}' を追加しました"
+    echo "✓ src/script.ts の vtuberThemes に '${SLUG}': '${THEME}' を追加しました"
+fi
+
+# vtuberNames オブジェクトに追加
+if grep -q "'${SLUG}':" src/script.ts | grep -A 1 "vtuberNames"; then
+    echo "  注意: '${SLUG}' は既に vtuberNames に存在します。スキップします。"
+else
+    # 閉じ括弧の前に新しいエントリを追加
+    sed -i '' "/^const vtuberNames: Record<string, string> = {/,/^};/ {
+        /^};/i\\
+    '${SLUG}': '${NAME}',
+    }" src/script.ts
+    echo "✓ src/script.ts の vtuberNames に '${SLUG}': '${NAME}' を追加しました"
 fi
 
 # 画像ファイルを自動検出
