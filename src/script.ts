@@ -89,6 +89,7 @@ const vtuberThemes: Record<string, string> = {
     'zonechan': 'violet',
     'kitaguchirei': 'wood',
     'shirayukihomare': 'white',
+    'hiiragiao': 'ocean',
 };
 
 // VTuber IDと名前のマッピング
@@ -136,6 +137,7 @@ const vtuberNames: Record<string, string> = {
     'zonechan': 'ぞーんちゃん',
     'kitaguchirei': '北口零',
     'shirayukihomare': '白雪誉',
+    'hiiragiao': '柊蒼',
 };
 
 // テーマ適用関数

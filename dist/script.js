@@ -115,6 +115,7 @@ var vtuberThemes = {
     'zonechan': 'violet',
     'kitaguchirei': 'wood',
     'shirayukihomare': 'white',
+    'hiiragiao': 'ocean',
 };
 // VTuber IDと名前のマッピング
 var vtuberNames = {
@@ -161,6 +162,7 @@ var vtuberNames = {
     'zonechan': 'ぞーんちゃん',
     'kitaguchirei': '北口零',
     'shirayukihomare': '白雪誉',
+    'hiiragiao': '柊蒼',
 };
 // テーマ適用関数
 function applyTheme(vtuberId) {
